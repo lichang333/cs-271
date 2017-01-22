@@ -1,4 +1,4 @@
-TITLE Programming Assignment #1    (assn1.asm)
+TITLE Programming Assignment #1 (assn1.asm)
 
 ; Author: Alec Merdler
 ;
@@ -79,170 +79,170 @@ main PROC
     call	WriteString
     call	CrLf
 
-start:
-			mov		edx, OFFSET prompt_1
-			call	WriteString
-			call	ReadInt
-			mov		firstNumber, eax
+    start:
+        mov		edx, OFFSET prompt_1
+        call	WriteString
+        call	ReadInt
+        mov		firstNumber, eax
 
 
-			mov		edx, OFFSET prompt_2
-			call	WriteString
-			call	ReadInt
-			mov		secondNumber, eax
+        mov		edx, OFFSET prompt_2
+        call	WriteString
+        call	ReadInt
+        mov		secondNumber, eax
 
-			; **EC: Jump if second number greater than first
-			mov		eax, secondNumber
-			cmp		eax, firstNumber
-			jg		warning
-			jle		calculate
-
-
-; jump if secondNumber > firstNumber
-warning:
-			mov		edx, OFFSET EC1warn
-			call	WriteString
-			call	CrLf
-			jg		rerun
+        ; **EC: Jump if second number greater than first
+        mov		eax, secondNumber
+        cmp		eax, firstNumber
+        jg		warning
+        jle		calculate
 
 
-; Calculate Required Values
-calculate:
-				; sum
-				mov		eax, firstNumber
-				add		eax, secondNumber
-				mov		sum, eax
-
-				; difference
-				mov		eax, firstNumber
-				sub		eax, secondNumber
-				mov		difference, eax
-
-				; product
-				mov		eax, firstNumber
-				mov		ebx, secondNumber
-				mul		ebx
-				mov		product, eax
+    ; jump if secondNumber > firstNumber
+    warning:
+        mov		edx, OFFSET EC1warn
+        call	WriteString
+        call	CrLf
+        jg		rerun
 
 
-				; quotient
-				mov		edx, 0
-				mov		eax, firstNumber
-				cdq
-				mov		ebx, secondNumber
-				cdq
-				div		ebx
-				mov		quotient, eax
-				mov		remainder, edx
+    ; Calculate Required Values
+    calculate:
+        ; sum
+        mov		eax, firstNumber
+        add		eax, secondNumber
+        mov		sum, eax
 
-				; EC floating point representation of quotient and remainder
-				fld		firstNumber					; load firstNumber (integer) into ST(0)
-				fdiv	secondNumber				; divide firstNumber by secondNumber ?
-				fimul	oneThousand
-				frndint
-				fist	bigInt
-				fst		EC2FloatingPoint			; take value off stack, put it in EC2FloatingPoint
+        ; difference
+        mov		eax, firstNumber
+        sub		eax, secondNumber
+        mov		difference, eax
 
-			; Display Results
-
-				; sum results
-				mov		eax, firstNumber
-				call	WriteDec
-				mov		edx, OFFSET sumString
-				call	WriteString
-				mov		eax, secondNumber
-				call	WriteDec
-				mov		edx, OFFSET equalsString
-				call	WriteString
-				mov		eax, sum
-				call	WriteDec
-				call	CrLf
-
-				; difference results
-				mov		eax, firstNumber
-				call	WriteDec
-				mov		edx, OFFSET differenceString
-				call	WriteString
-				mov		eax, secondNumber
-				call	WriteDec
-				mov		edx, OFFSET equalsString
-				call	WriteString
-				mov		eax, difference
-				call	WriteDec
-				call	CrLf
-
-				; product results
-				mov		eax, firstNumber
-				call	WriteDec
-				mov		edx, OFFSET productString
-				call	WriteString
-				mov		eax, secondNumber
-				call	WriteDec
-				mov		edx, OFFSET equalsString
-				call	WriteString
-				mov		eax, product
-				call	WriteDec
-				call	CrLf
-
-				; quotient results
-				mov		eax, firstNumber
-				call	WriteDec
-				mov		edx, OFFSET quotientString
-				call	WriteString
-				mov		eax, secondNumber
-				call	WriteDec
-				mov		edx, OFFSET equalsString
-				call	WriteString
-				mov		eax, quotient
-				call	WriteDec
-				mov		edx, OFFSET remainderString
-				call	WriteString
-				mov		eax, remainder
-				call	WriteDec
-				call	CrLf
-
-				; EC2 Output
-				mov		edx, OFFSET EC2string
-				call	WriteString
-				mov		edx, 0
-				mov		eax, bigInt
-				cdq
-				mov		ebx, 1000
-				cdq
-				div		ebx
-				mov		firstPart, eax
-				mov		ECremainder, edx
-				mov		eax, firstPart
-				call	WriteDec
-				mov		edx, OFFSET dot
-				call	WriteString
-
-				;calculate remainder
-				mov		eax, firstPart
-				mul		oneThousand
-				mov		temp, eax
-				mov		eax, bigInt
-				sub		eax, temp
-				mov		secondPart, eax
-				call	WriteDec
-				call	CrLf
-
-; Loop until user quits
-; prompts the user to enter a 0 or 1 to continue looping.
-; if they do want to play again, it takes them to section 'start'
-; skipping the instrucitons
-rerun:		mov		edx, OFFSET EC3prompt
-                call	WriteString
-                call	ReadInt
-                mov		EC3response, eax
-                cmp		eax, 1
-                je		start				; jump to start if response == 1
+        ; product
+        mov		eax, firstNumber
+        mov		ebx, secondNumber
+        mul		ebx
+        mov		product, eax
 
 
-				; Say Goodbye
-                mov		edx, OFFSET goodBye
-                call	WriteString
-                call	CrLf
+        ; quotient
+        mov		edx, 0
+        mov		eax, firstNumber
+        cdq
+        mov		ebx, secondNumber
+        cdq
+        div		ebx
+        mov		quotient, eax
+        mov		remainder, edx
+
+        ; EC floating point representation of quotient and remainder
+        fld		firstNumber					; load firstNumber (integer) into ST(0)
+        fdiv	secondNumber				; divide firstNumber by secondNumber ?
+        fimul	oneThousand
+        frndint
+        fist	bigInt
+        fst		EC2FloatingPoint			; take value off stack, put it in EC2FloatingPoint
+
+    ; Display Results
+
+        ; sum
+        mov		eax, firstNumber
+        call	WriteDec
+        mov		edx, OFFSET sumString
+        call	WriteString
+        mov		eax, secondNumber
+        call	WriteDec
+        mov		edx, OFFSET equalsString
+        call	WriteString
+        mov		eax, sum
+        call	WriteDec
+        call	CrLf
+
+        ; difference
+        mov		eax, firstNumber
+        call	WriteDec
+        mov		edx, OFFSET differenceString
+        call	WriteString
+        mov		eax, secondNumber
+        call	WriteDec
+        mov		edx, OFFSET equalsString
+        call	WriteString
+        mov		eax, difference
+        call	WriteDec
+        call	CrLf
+
+        ; product
+        mov		eax, firstNumber
+        call	WriteDec
+        mov		edx, OFFSET productString
+        call	WriteString
+        mov		eax, secondNumber
+        call	WriteDec
+        mov		edx, OFFSET equalsString
+        call	WriteString
+        mov		eax, product
+        call	WriteDec
+        call	CrLf
+
+        ; quotient
+        mov		eax, firstNumber
+        call	WriteDec
+        mov		edx, OFFSET quotientString
+        call	WriteString
+        mov		eax, secondNumber
+        call	WriteDec
+        mov		edx, OFFSET equalsString
+        call	WriteString
+        mov		eax, quotient
+        call	WriteDec
+        mov		edx, OFFSET remainderString
+        call	WriteString
+        mov		eax, remainder
+        call	WriteDec
+        call	CrLf
+
+        ; EC2 Output
+        mov		edx, OFFSET EC2string
+        call	WriteString
+        mov		edx, 0
+        mov		eax, bigInt
+        cdq
+        mov		ebx, 1000
+        cdq
+        div		ebx
+        mov		firstPart, eax
+        mov		ECremainder, edx
+        mov		eax, firstPart
+        call	WriteDec
+        mov		edx, OFFSET dot
+        call	WriteString
+
+        ; calculate remainder
+        mov		eax, firstPart
+        mul		oneThousand
+        mov		temp, eax
+        mov		eax, bigInt
+        sub		eax, temp
+        mov		secondPart, eax
+        call	WriteDec
+        call	CrLf
+
+    ; Loop until user quits
+    ; prompts the user to enter a 0 or 1 to continue looping.
+    ; if they do want to play again, it takes them to section 'start'
+    ; skipping the instructions
+    rerun:		mov	edx, OFFSET EC3prompt
+        call	WriteString
+        call	ReadInt
+        mov		EC3response, eax
+        cmp		eax, 1
+        je		start
+
+
+        ; Say Goodbye
+        mov		edx, OFFSET goodBye
+        call	WriteString
+        call	CrLf
 
 	exit
 main ENDP
