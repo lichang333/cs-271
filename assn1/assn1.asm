@@ -2,207 +2,192 @@ TITLE Programming Assignment #1 (assn1.asm)
 
 ; Author: Alec Merdler
 ;
-; Description: Write and test a MASM program to perform the following tasks:
-;	1. Display your name and program title on the output screen.
-;	2. Display instructions for the user.
-;	3. Prompt the user to enter two numbers.
-;	4. Calculate the sum, difference, product, (integer) quotient and remainder of the numbers.
-;	5. Display a terminating message.
-;	EC: Validate second number is less than the first
-; 	EC: Loop until user decides to quit
-; 	EC: Calculates and displays division as floating point number rounded to .001
+; Description: Prompt user for two integers, then output the sum, difference, product,
+;              and quotient/remainder of the input.
+;              Validate first number is greater than the second
+;              Loop the program until user quits
+;              Calculate the floating point result of division
 
 INCLUDE Irvine32.inc
 
 .data
-myName				BYTE	"Alec Merdler ", 0
-programTitle		BYTE	"Programming Assignment #1", 0
+programTitle		BYTE	"Programming Assignment #1 - Alec Merdler", 0
 instructions		BYTE	"Please enter two numbers, and I'll show you the sum, difference, product, quotient, and remainder.", 0
-prompt_1			BYTE	"First Number: ", 0
-prompt_2			BYTE	"Second Number: ", 0
-firstNumber			DWORD	?
-secondNumber		DWORD	?
-goodBye				BYTE	"Goodbye", 0
-equalsString		BYTE	" = ", 0
+firstPrompt			BYTE	"First Number: ", 0
+secondPrompt	    BYTE	"Second Number: ", 0
+firstNum			DWORD	?
+secondNum		    DWORD	?
+goodbyeMessage		BYTE	"Goodbye", 0
+equalSign		    BYTE	" = ", 0
 sum					DWORD	?
-sumString			BYTE	" + ",0
+additionSign		BYTE	" + ",0
 difference			DWORD	?
-differenceString	BYTE	" - ",0
+minusSign	        BYTE	" - ",0
 product				DWORD	?
-productString		BYTE	" * ",0
+multiplicationSign	BYTE	" * ",0
 quotient			DWORD	?
-quotientString		BYTE	" / ",0
+divisionSign		BYTE	" / ",0
 remainder			DWORD	?
-remainderString		BYTE	" remainder ", 0
-
-; Extra Credit
-EC1prompt			BYTE	"**EC: This program verifies the second number is less than the first", 0
-EC1warn				BYTE	"The second number must be less than the first!", 0
-EC2prompt			BYTE	"**EC: This program also calculates and displays the quotient as a floating-point number, rounded to the nearest .001", 0
-EC2string			BYTE	"EC: Floating-point value: ", 0
+remainderSign		BYTE	" remainder ", 0
+EC1Message			BYTE	"**EC: Program verifies first number greater than second", 0
+warningMessage		BYTE	"The first number must be greater than the second!", 0
+EC2Message			BYTE	"**EC: Program calculates the quotient as a floating-point number, rounded to the nearest .001", 0
+floatSign		    BYTE	"EC: Floating-point value: ", 0
 EC2FloatingPoint	REAL4	?
 oneThousand			DWORD	1000
 bigInt			    DWORD	0
-ECremainder			DWORD	?
-dot					BYTE	".",0
+floatRemainder		DWORD	?
+dot					BYTE	".", 0
 firstPart			DWORD	?
 secondPart			DWORD	?
 temp				DWORD	?
-EC3prompt			BYTE	"EC: Would you like to play again? Enter 1 for YES or 0 for NO: ", 0
-EC3explain			BYTE	"**EC: This program loops until the user decides to quit.", 0
-EC3response			DWORD	?
+repeatPrompt		BYTE	"EC: Continue? (1 - yes / 0 - no): ", 0
+EC3Explain			BYTE	"**EC: Program loops until the user decides to quit.", 0
+doRepeat			DWORD	?
 
 .code
 main PROC
 
-	; Introduction
-	; This section prints out the instructions and extra credit options
-    mov		edx, OFFSET myName
-    call	WriteString
+	; Introduction - prints out the program description and extra credit options
     mov		edx, OFFSET programTitle
     call	WriteString
-    call	CrLf
-    mov		edx, OFFSET EC1prompt
+    call	Crlf
+    call    Crlf
+    mov		edx, OFFSET EC1Message
     call	WriteString
-    call	CrLf
-    mov		edx, OFFSET EC2prompt
+    call	Crlf
+    mov		edx, OFFSET EC2Message
     call	WriteString
-    call	CrLf
-    mov		edx, OFFSET EC3explain
+    call	Crlf
+    mov		edx, OFFSET EC3Explain
     call	WriteString
-    call	CrLf
+    call	Crlf
 
-	; Get The Data
-	; This section gets the first and second number and jumps if the user's second number is greater than the first number
-	; the program will still allow them to loop even if they enter a second number that is greater than the first.
-    mov		edx, OFFSET instructions
-    call	WriteString
-    call	CrLf
-
+	; Get The Data - prompt for and receive input from the user
     start:
-        mov		edx, OFFSET prompt_1
+        mov		edx, OFFSET instructions
+        call	WriteString
+        call	Crlf
+
+        mov		edx, OFFSET firstPrompt
         call	WriteString
         call	ReadInt
-        mov		firstNumber, eax
+        mov		firstNum, eax
 
-
-        mov		edx, OFFSET prompt_2
+        mov		edx, OFFSET secondPrompt
         call	WriteString
         call	ReadInt
-        mov		secondNumber, eax
+        mov		secondNum, eax
 
-        ; **EC: Jump if second number greater than first
-        mov		eax, secondNumber
-        cmp		eax, firstNumber
+        ; Jump if second number greater than first
+        mov		eax, secondNum
+        cmp		eax, firstNum
         jg		warning
         jle		calculate
 
-
-    ; jump if secondNumber > firstNumber
+    ; Display warning message and jump to end
     warning:
-        mov		edx, OFFSET EC1warn
+        mov		edx, OFFSET warningMessage
         call	WriteString
-        call	CrLf
+        call	Crlf
         jg		rerun
 
-
-    ; Calculate Required Values
+    ; Calculate Required Values - perform the calculations
     calculate:
         ; sum
-        mov		eax, firstNumber
-        add		eax, secondNumber
+        mov		eax, firstNum
+        add		eax, secondNum
         mov		sum, eax
 
         ; difference
-        mov		eax, firstNumber
-        sub		eax, secondNumber
+        mov		eax, firstNum
+        sub		eax, secondNum
         mov		difference, eax
 
         ; product
-        mov		eax, firstNumber
-        mov		ebx, secondNumber
+        mov		eax, firstNum
+        mov		ebx, secondNum
         mul		ebx
         mov		product, eax
 
-
         ; quotient
         mov		edx, 0
-        mov		eax, firstNumber
+        mov		eax, firstNum
         cdq
-        mov		ebx, secondNumber
+        mov		ebx, secondNum
         cdq
         div		ebx
         mov		quotient, eax
         mov		remainder, edx
 
-        ; EC floating point representation of quotient and remainder
-        fld		firstNumber					; load firstNumber (integer) into ST(0)
-        fdiv	secondNumber				; divide firstNumber by secondNumber ?
+        ; Floating point representation of quotient and remainder
+        fld		firstNum
+        fdiv	secondNum
         fimul	oneThousand
         frndint
         fist	bigInt
-        fst		EC2FloatingPoint			; take value off stack, put it in EC2FloatingPoint
+        fst		EC2FloatingPoint
 
     ; Display Results
 
         ; sum
-        mov		eax, firstNumber
+        mov		eax, firstNum
         call	WriteDec
-        mov		edx, OFFSET sumString
+        mov		edx, OFFSET additionSign
         call	WriteString
-        mov		eax, secondNumber
+        mov		eax, secondNum
         call	WriteDec
-        mov		edx, OFFSET equalsString
+        mov		edx, OFFSET equalSign
         call	WriteString
         mov		eax, sum
         call	WriteDec
-        call	CrLf
+        call	Crlf
 
         ; difference
-        mov		eax, firstNumber
+        mov		eax, firstNum
         call	WriteDec
-        mov		edx, OFFSET differenceString
+        mov		edx, OFFSET minusSign
         call	WriteString
-        mov		eax, secondNumber
+        mov		eax, secondNum
         call	WriteDec
-        mov		edx, OFFSET equalsString
+        mov		edx, OFFSET equalSign
         call	WriteString
         mov		eax, difference
         call	WriteDec
-        call	CrLf
+        call	Crlf
 
         ; product
-        mov		eax, firstNumber
+        mov		eax, firstNum
         call	WriteDec
-        mov		edx, OFFSET productString
+        mov		edx, OFFSET multiplicationSign
         call	WriteString
-        mov		eax, secondNumber
+        mov		eax, secondNum
         call	WriteDec
-        mov		edx, OFFSET equalsString
+        mov		edx, OFFSET equalSign
         call	WriteString
         mov		eax, product
         call	WriteDec
-        call	CrLf
+        call	Crlf
 
         ; quotient
-        mov		eax, firstNumber
+        mov		eax, firstNum
         call	WriteDec
-        mov		edx, OFFSET quotientString
+        mov		edx, OFFSET divisionSign
         call	WriteString
-        mov		eax, secondNumber
+        mov		eax, secondNum
         call	WriteDec
-        mov		edx, OFFSET equalsString
+        mov		edx, OFFSET equalSign
         call	WriteString
         mov		eax, quotient
         call	WriteDec
-        mov		edx, OFFSET remainderString
+        mov		edx, OFFSET remainderSign
         call	WriteString
         mov		eax, remainder
         call	WriteDec
-        call	CrLf
+        call	Crlf
 
-        ; EC2 Output
-        mov		edx, OFFSET EC2string
+        ; Floating point division
+        mov		edx, OFFSET floatSign
         call	WriteString
         mov		edx, 0
         mov		eax, bigInt
@@ -211,13 +196,11 @@ main PROC
         cdq
         div		ebx
         mov		firstPart, eax
-        mov		ECremainder, edx
+        mov		floatRemainder, edx
         mov		eax, firstPart
         call	WriteDec
         mov		edx, OFFSET dot
         call	WriteString
-
-        ; calculate remainder
         mov		eax, firstPart
         mul		oneThousand
         mov		temp, eax
@@ -225,24 +208,22 @@ main PROC
         sub		eax, temp
         mov		secondPart, eax
         call	WriteDec
-        call	CrLf
+        call	Crlf
+        call    Crlf
 
     ; Loop until user quits
-    ; prompts the user to enter a 0 or 1 to continue looping.
-    ; if they do want to play again, it takes them to section 'start'
-    ; skipping the instructions
-    rerun:		mov	edx, OFFSET EC3prompt
+    rerun:
+        mov	    edx, OFFSET repeatPrompt
         call	WriteString
         call	ReadInt
-        mov		EC3response, eax
+        mov		doRepeat, eax
         cmp		eax, 1
         je		start
 
-
         ; Say Goodbye
-        mov		edx, OFFSET goodBye
+        mov		edx, OFFSET goodbyeMessage
         call	WriteString
-        call	CrLf
+        call	Crlf
 
 	exit
 main ENDP
