@@ -17,7 +17,7 @@ INCLUDE Irvine32.inc
 programPrompt		BYTE	"Fibonacci Numbers, programmed by Alec Merdler", 0
 namePrompt			BYTE	"Enter your name: ", 0
 instructionsPrompt	BYTE	"Enter the number of Fibonacci terms you would like to see. Please enter a number between [1 - 46]: ", 0
-ecMessage			BYTE	"EC: Doing something awesome: Setting background/text color", 0
+ecMessage			BYTE	"**EC: Do something incredible: Setting background/text color", 0
 numTerms			DWORD	?
 prev1				DWORD	?
 prev2				DWORD	?
@@ -84,9 +84,9 @@ main PROC
 
 	; Validate user data
     cmp		eax, UPPERLIMIT
-    jg		inputHigh
+    jg		invalidMax
     cmp		eax, LOWERLIMIT
-    jl		inputLow
+    jl		invalidLow
     je		inputOne
     cmp		eax, 2
     je		inputTwo
@@ -133,16 +133,17 @@ main PROC
     loop    fib
     jmp		farewell
 
-    inputHigh:
+    invalidMax:
     mov		edx, OFFSET tooHighError
     call	WriteString
     jmp		instructions
 
-    inputLow:
+    invalidLow:
     mov		edx, OFFSET tooLowError
     call	WriteString
     jmp		instructions
 
+    ; Need special cases for 1, 2, and 3 terms due to the Fibonacci algorithm
     inputOne:
     mov		edx, OFFSET firstOne
     call	WriteString
