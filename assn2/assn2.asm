@@ -14,163 +14,158 @@ TITLE Programming Assignment #2 (assn2.asm)
 INCLUDE Irvine32.inc
 
 .data
-programTitle		BYTE	"Fibonacci Numbers, programmed by Alec Merdler", 0
+programPrompt		BYTE	"Fibonacci Numbers, programmed by Alec Merdler", 0
 namePrompt			BYTE	"Enter your name: ", 0
-termsPrompt			BYTE	"Enter the number of Fibonacci terms you would like to see. Please enter a number between [1 - 46]: ", 0
-ecPrompt			BYTE	"EC: Doing something awesome: Setting text color to teal-ish", 0
-numFib				DWORD	?
+instructionsPrompt	BYTE	"Enter the number of Fibonacci terms you would like to see. Please enter a number between [1 - 46]: ", 0
+ecMessage			BYTE	"EC: Doing something awesome: Setting background/text color", 0
+numTerms			DWORD	?
 prev1				DWORD	?
 prev2				DWORD	?
-spaces				BYTE	"     ",0
-goodbye				BYTE	"Goodbye, ", 0
-firstTwo			BYTE	"1     1     ", 0
+spaces				BYTE	"     ", 0
+farewellMessage		BYTE	"Farewell, ", 0
 firstOne			BYTE	"1", 0
+firstTwo			BYTE	"1     1     ", 0
+firstThree          BYTE    "1     1     2", 0
 temp				DWORD	?
 moduloFive			DWORD	5
 UPPERLIMIT = 46
 LOWERLIMIT = 1
-
-; User's name
 buffer				BYTE 21 DUP(0)
 byteCount			DWORD	?
-
 greeting			BYTE	"Hello, ",0
-
-; Validation
 tooHighError		BYTE	"The number you entered is too high! It must be 46 or below. ", 0
 tooLowError			BYTE	"The number you entered is too low! It must be 1 or above. ", 0
 
 ; **EC: Doing something awesome: Setting  Background Color and Text Color
-val1 DWORD 11
-val2 DWORD 16
+backgroundColor     DWORD   19
+textColor           DWORD   16
 
 .code
 main PROC
+	; **EC: Doing something awesome like setting the text color
+    mov     eax, textColor
+    imul    eax, 16
+    add     eax, backgroundColor
+    call    setTextColor
 
-	;**EC: Doing something awesome like setting the text color
-		mov     eax, val2
-		imul    eax, 16
-		add     eax, val1
-		call    setTextColor
+	; Section: introduction
+    mov		edx, OFFSET programPrompt
+    call	WriteString
+    call	CrLf
 
-	; INTRODUCTION
-		mov		edx, OFFSET programTitle
-		call	WriteString
-		call	CrLf
+    ; Extra Credit Message
+    mov		edx, OFFSET ecMessage
+    call	WriteString
+    call	CrLf
 
-		; EC Prompt
-		mov		edx, OFFSET ecPrompt
-		call	WriteString
-		call	CrLf
+    ; Get user's name
+    mov		edx, OFFSET namePrompt
+    call	WriteString
+    mov		edx, OFFSET buffer
+    mov		ecx, SIZEOF	buffer
+    call	ReadString
+    mov		byteCount, eax
 
-		mov		edx, OFFSET namePrompt
-		call	WriteString
+    ; Greet the user
+    mov		edx, OFFSET greeting
+    call	WriteString
+    mov		edx, OFFSET buffer
+    call	WriteString
+    call	CrLf
 
-		; Get user's name
-		mov		edx, OFFSET buffer	;point to the buffer
-		mov		ecx, SIZEOF	buffer	; specify max characters
-		call	ReadString
-		mov		byteCount, eax
+	; Section: userInstructions
+    instructions:
+    mov		edx, OFFSET instructionsPrompt
+    call	WriteString
 
-		; greet the user
-		mov		edx, OFFSET greeting
-		call	WriteString
-		mov		edx, OFFSET buffer
-		call	WriteString
-		call	CrLf
-
-	; USER INSTRUCTIONS
-topPrompt:
-        mov		edx, OFFSET termsPrompt
-        call	WriteString
-
-	; GET USER DATA
-		call	ReadInt
-		mov		numFib, eax
+	; Section: getUserData
+    call	ReadInt
+    mov		numTerms, eax
 
 	; Validate user data
-		cmp		eax, UPPERLIMIT
-		jg		TooHigh
-		cmp		eax, LOWERLIMIT
-		jl		TooLow
-		je		JustOne
-		cmp		eax, 2
-		je		JustTwo
+    cmp		eax, UPPERLIMIT
+    jg		inputHigh
+    cmp		eax, LOWERLIMIT
+    jl		inputLow
+    je		inputOne
+    cmp		eax, 2
+    je		inputTwo
+    cmp     eax, 3
+    je      inputThree
 
-	; DISPLAY FIBS
-		; Prepare loop (post-test), do the first two manually
-		mov		ecx, numFib
-		sub		ecx, 3
-		mov		eax, 1
-		call	WriteDec
-		mov		edx, OFFSET spaces
-		call	WriteString
-		call	WriteDec
-		mov		edx, OFFSET spaces
-		call	WriteString
-		mov		prev2, eax
-		mov		eax, 2
-		call	WriteDec
-		mov		edx, OFFSET spaces
-		call	WriteString
-		mov		prev1, eax
+	; Section: displayFibs
+    ; Prepare loop (post-test), do the first two manually
+    mov		ecx, numTerms
+    sub		ecx, 3
+    mov		eax, 1
+    call	WriteDec
+    mov		edx, OFFSET spaces
+    call	WriteString
+    call	WriteDec
+    mov		edx, OFFSET spaces
+    call	WriteString
+    mov		prev2, eax
+    mov		eax, 2
+    call	WriteDec
+    mov		edx, OFFSET spaces
+    call	WriteString
+    mov		prev1, eax
 
-		fib:
-			; add prev 2 to eax
-			add		eax, prev2
-			call	WriteDec
+    fib:
+    add		eax, prev2
+    call	WriteDec
+    mov		edx, OFFSET spaces
+    call	WriteString
+    mov		temp, eax
+    mov		eax, prev1
+    mov		prev2, eax
+    mov		eax, temp
+    mov		prev1, eax
+    mov		edx, ecx
+    cdq
+    div		moduloFive
+    cmp		edx, 0
+    jne		skip
+    call	CrLf
 
-			mov		edx, OFFSET spaces
-			call	WriteString
+    skip:
+    mov		eax, temp
+    loop    fib
+    jmp		farewell
 
-			mov		temp, eax
-			mov		eax, prev1
-			mov		prev2, eax
-			mov		eax, temp
-			mov		prev1, eax
+    inputHigh:
+    mov		edx, OFFSET tooHighError
+    call	WriteString
+    jmp		instructions
 
-			;for spacing (first time it should be % 3, rest %5)
-			mov		edx, ecx
-			cdq
-			div		moduloFive
-			cmp		edx, 0
-			jne		skip
-			call	CrLf
+    inputLow:
+    mov		edx, OFFSET tooLowError
+    call	WriteString
+    jmp		instructions
 
-		skip:
-				; restore what was on eax
-				mov		eax, temp
-				; if ecx % 3 = 0 call CrLf
-				loop	fib
-		jmp		TheEnd
+    inputOne:
+    mov		edx, OFFSET firstOne
+    call	WriteString
+    jmp		farewell
 
-TooHigh:
-			mov		edx, OFFSET tooHighError
-			call	WriteString
-			jmp		TopPrompt
+    inputTwo:
+    mov		edx, OFFSET firstTwo
+    call	WriteString
+    jmp		farewell
 
-TooLow:
-			mov		edx, OFFSET tooLowError
-			call	WriteString
-			jmp		TopPrompt
-JustOne:
-			mov		edx, OFFSET firstOne
-			call	WriteString
-			jmp		TheEnd
+    inputThree:
+    mov     edx, OFFSET firstThree
+    call    WriteString
+    jmp     farewell
 
-JustTwo:
-			mov		edx, OFFSET firstTwo
-			call	WriteString
-			jmp		TheEnd
-
-	; FAREWELL
-TheEnd:
-			call	CrLf
-			mov		edx, OFFSET goodbye
-			call	WriteString
-			mov		edx, OFFSET buffer
-			call	WriteString
-			call	CrLf
+    ; Section: farewell
+    farewell:
+    call	CrLf
+    mov		edx, OFFSET farewellMessage
+    call	WriteString
+    mov		edx, OFFSET buffer
+    call	WriteString
+    call	CrLf
 
 	exit
 main ENDP
