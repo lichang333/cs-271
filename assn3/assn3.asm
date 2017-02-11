@@ -57,148 +57,148 @@ val2 DWORD 16
 
 .code
 main PROC
-	; Set text color to teal
-		mov  eax, val2
-		imul eax, 16
-		add  eax, val1
-		call setTextColor
+    ; Set text color to teal
+        mov  eax, val2
+        imul eax, 16
+        add  eax, val1
+        call setTextColor
 
-	; Programmer name and title of assignment
-  	call	 CrLf
-  	mov		 edx, OFFSET welcome
-  	call	 WriteString
-  	call	 CrLf
+    ; Programmer name and title of assignment
+    call	 CrLf
+    mov		 edx, OFFSET welcome
+    call	 WriteString
+    call	 CrLf
 
-	;ec prompts
-  	mov		 edx, OFFSET ec_prompt_1
-  	call	 WriteString
-  	call	 CrLf
-  	mov		 edx, OFFSET ec_prompt_2
-  	call	 WriteString
-  	call	 CrLf
+    ;ec prompts
+    mov		 edx, OFFSET ec_prompt_1
+    call	 WriteString
+    call	 CrLf
+    mov		 edx, OFFSET ec_prompt_2
+    call	 WriteString
+    call	 CrLf
 
-	; get user name
-  	mov		edx, OFFSET userNameInstructions
-  	call	WriteString
-  	call	CrLf
-  	mov		edx, OFFSET userName
-  	mov		ecx, SIZEOF userName
-  	call	ReadString
-  	mov		userNameByteCount, eax
+    ; get user name
+    mov		edx, OFFSET userNameInstructions
+    call	WriteString
+    call	CrLf
+    mov		edx, OFFSET userName
+    mov		ecx, SIZEOF userName
+    call	ReadString
+    mov		userNameByteCount, eax
 
-	;test username
-  	mov		edx, OFFSET greeting
-  	call	WriteString
-  	mov		edx, OFFSET userName
-  	call	WriteString
-  	call	CrLF
+    ;test username
+    mov		edx, OFFSET greeting
+    call	WriteString
+    mov		edx, OFFSET userName
+    call	WriteString
+    call	CrLF
 
-	; assignment instructions
-  	mov		edx, OFFSET instructions_1
-  	call	WriteString
-  	call	CrLf
-  	mov		edx, OFFSET instructions_2
-  	call	WriteString
-  	call	CrLf
-  	mov		ecx, 0
-
-
-	; loop to allow user to continue entering negative numbers
-	userNumbers:	;read user number
-			mov		eax, count
-			call	WriteDec
-			add		eax, 1
-			mov		count, eax
-			mov	  edx, OFFSET instructions_3
-			call	WriteString
-			call  ReadInt
-			mov   number, eax
-			cmp		eax,LOWERLIMIT
-			jb		accumulate;
-			cmp		eax, UPPERLIMIT
-			jg		accumulate
-			add		eax, accumulator
-			mov		accumulator, eax
-			loop	userNumbers
+    ; assignment instructions
+    mov		edx, OFFSET instructions_1
+    call	WriteString
+    call	CrLf
+    mov		edx, OFFSET instructions_2
+    call	WriteString
+    call	CrLf
+    mov		ecx, 0
 
 
-	; do the accumulation
-	accumulate:
-			; test if they entered any valid numbers, if they didnt, jump to the sayGoodbye
-			mov		eax, count
-			sub		eax, 2
-			jz		sayGoodbye
-			mov		eax, accumulator
-			call	CrLF
-
-			; accumulated total
-			mov		edx, OFFSET  totalIs
-			call	WriteString
-			mov		eax, accumulator
-			call	WriteInt
-			call	CrLF
-
-			; total numbers accumulated
-			mov		edx, OFFSET quantNumbersEntered
-			call	WriteString
-			mov		eax, count
-			sub		eax, 2
-			call	WriteDec
-			call	CrLf
-
-			; integer rounded average
-			mov		edx, OFFSET roundedAve_prompt
-			call	WriteString
-			mov		eax, 0
-			mov		eax, accumulator
-			cdq
-			mov		ebx, count
-			sub		ebx, 2
-			idiv	ebx
-			mov		roundedAve, eax
-			call	WriteInt
-			call	CrLf
-
-			; integer average for accumulator
-			mov		remainder, edx
-			mov		edx, OFFSET floating_point_prompt
-			call	WriteString
-			call	WriteInt
-			mov		edx, OFFSET floating_point_point
-			call	WriteString
+    ; loop to allow user to continue entering negative numbers
+    userNumbers:	;read user number
+            mov		eax, count
+            call	WriteDec
+            add		eax, 1
+            mov		count, eax
+            mov	  edx, OFFSET instructions_3
+            call	WriteString
+            call  ReadInt
+            mov   number, eax
+            cmp		eax,LOWERLIMIT
+            jb		accumulate;
+            cmp		eax, UPPERLIMIT
+            jg		accumulate
+            add		eax, accumulator
+            mov		accumulator, eax
+            loop	userNumbers
 
 
-			; fancy stuff for floating point creation
-			mov		eax, remainder
-			mul		neg1k
-			mov		remainder, eax ; eax now holds remainder * -1000
-			mov		eax, count
-			sub		eax, 2		   ; ebx now holds something?
-			mul		onek
-			mov		subtractor, eax
+    ; do the accumulation
+    accumulate:
+            ; test if they entered any valid numbers, if they didnt, jump to the sayGoodbye
+            mov		eax, count
+            sub		eax, 2
+            jz		sayGoodbye
+            mov		eax, accumulator
+            call	CrLF
 
-			; fancy stack stuff for floating point creation
-			fld		remainder
-			fdiv	subtractor
-			fimul	onek
-			frndint
-			fist	floating_point
-			mov		eax, floating_point
-			call	WriteDec
-			call	CrLf
+            ; accumulated total
+            mov		edx, OFFSET  totalIs
+            call	WriteString
+            mov		eax, accumulator
+            call	WriteInt
+            call	CrLF
+
+            ; total numbers accumulated
+            mov		edx, OFFSET quantNumbersEntered
+            call	WriteString
+            mov		eax, count
+            sub		eax, 2
+            call	WriteDec
+            call	CrLf
+
+            ; integer rounded average
+            mov		edx, OFFSET roundedAve_prompt
+            call	WriteString
+            mov		eax, 0
+            mov		eax, accumulator
+            cdq
+            mov		ebx, count
+            sub		ebx, 2
+            idiv	ebx
+            mov		roundedAve, eax
+            call	WriteInt
+            call	CrLf
+
+            ; integer average for accumulator
+            mov		remainder, edx
+            mov		edx, OFFSET floating_point_prompt
+            call	WriteString
+            call	WriteInt
+            mov		edx, OFFSET floating_point_point
+            call	WriteString
 
 
-	; say goodbye
-	sayGoodbye:
-			call	CrLf
-			mov		edx, OFFSET goodbye
-			call	WriteString
-			mov		edx, OFFSET userName
-			call	WriteString
-			mov		edx, OFFSET floating_point_point
-			call	WriteString
-			call	CrLf
-			call	CrLf
+            ; fancy stuff for floating point creation
+            mov		eax, remainder
+            mul		neg1k
+            mov		remainder, eax ; eax now holds remainder * -1000
+            mov		eax, count
+            sub		eax, 2		   ; ebx now holds something?
+            mul		onek
+            mov		subtractor, eax
+
+            ; fancy stack stuff for floating point creation
+            fld		remainder
+            fdiv	subtractor
+            fimul	onek
+            frndint
+            fist	floating_point
+            mov		eax, floating_point
+            call	WriteDec
+            call	CrLf
+
+
+    ; say goodbye
+    sayGoodbye:
+            call	CrLf
+            mov		edx, OFFSET goodbye
+            call	WriteString
+            mov		edx, OFFSET userName
+            call	WriteString
+            mov		edx, OFFSET floating_point_point
+            call	WriteString
+            call	CrLf
+            call	CrLf
 
 ; exit to operating system
 exit
