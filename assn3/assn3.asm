@@ -20,23 +20,23 @@ INCLUDE Irvine32.inc
 .data
 programPrompt		   BYTE	 "Integer Accumulator, programmed by Alec Merdler", 0
 namePrompt			   BYTE	 "Enter your name: ", 0
-instructions_1		   BYTE	 "Please enter numbers between [-100, -1].", 0
-instructions_2		   BYTE	 "Enter a non-negative number when you are finished to see results.", 0
-instructions_3		   BYTE	 " Enter a number: ", 0
-greeting			   BYTE	 "Welcome, ", 0
-goodbye				   BYTE	 "Exiting Integer Accumulator program. Goodbye, ", 0
+constraintsMessage	   BYTE	 "Please enter numbers between [-100, -1].", 0
+quitMessage		       BYTE	 "Enter a non-negative number when you are finished to see results.", 0
+numInputPrompt		   BYTE	 " Enter a number: ", 0
+greetingMessage		   BYTE	 "Welcome, ", 0
+goodbyeMessage		   BYTE	 "Exiting Integer Accumulator program. Goodbye, ", 0
 number				   DWORD ?
 userName			   BYTE  21 DUP(0)
 userNameByteCount      DWORD ?
 count				   DWORD 1
 accumulator			   DWORD 0
-totalIs				   BYTE	 "The total is:                  ", 0
-quantNumbersEntered    BYTE	 "Amount of numbers accumulated:  ", 0
-roundedAve_prompt	   BYTE	 "The rounded average is:        ", 0
-roundedAve		       DWORD 0
+totalMessage		   BYTE	 "The total is:                  ", 0
+numQuantityMessage     BYTE	 "Amount of numbers accumulated:  ", 0
+roundedAvgMessage	   BYTE	 "The rounded average is:        ", 0
+roundedAvg		       DWORD 0
 remainder			   DWORD ?
-floating_point_point   BYTE	 ".",0
-floating_point_prompt  BYTE	 "As a floating-point number:    ", 0
+decimalPointString     BYTE	 ".",0
+floatingPointMessage   BYTE	 "As a floating-point number:    ", 0
 neg1k				   DWORD -1000
 onek				   DWORD 1000
 subtractor			   DWORD ?
@@ -51,7 +51,7 @@ UPPERLIMIT = -1
 
 .code
 main PROC
-    ; Set text color to teal
+    ; **EC: Do something astoundingly creative (set background/text color).
     mov     eax, backgroundColor
     imul    eax, 16
     add     eax, textColor
@@ -81,19 +81,17 @@ main PROC
     mov		ecx, SIZEOF userName
     call	ReadString
     mov		userNameByteCount, eax
-
-    ; test username
-    mov		edx, OFFSET greeting
+    mov		edx, OFFSET greetingMessage
     call	WriteString
     mov		edx, OFFSET userName
     call	WriteString
     call	CrLF
 
     ; Display instructions for the user.
-    mov		edx, OFFSET instructions_1
+    mov		edx, OFFSET constraintsMessage
     call	WriteString
     call	CrLf
-    mov		edx, OFFSET instructions_2
+    mov		edx, OFFSET quitMessage
     call	WriteString
     call	CrLf
     mov		ecx, 0
@@ -105,10 +103,10 @@ main PROC
         call	WriteDec
         add		eax, 1
         mov		count, eax
-        mov	  edx, OFFSET instructions_3
+        mov	    edx, OFFSET numInputPrompt
         call	WriteString
-        call  ReadInt
-        mov   number, eax
+        call    ReadInt
+        mov     number, eax
         cmp		eax,LOWERLIMIT
         jb		accumulate;
         cmp		eax, UPPERLIMIT
@@ -128,14 +126,14 @@ main PROC
         call	CrLF
 
         ; accumulated total
-        mov		edx, OFFSET  totalIs
+        mov		edx, OFFSET  totalMessage
         call	WriteString
         mov		eax, accumulator
         call	WriteInt
         call	CrLF
 
         ; total numbers accumulated
-        mov		edx, OFFSET quantNumbersEntered
+        mov		edx, OFFSET numQuantityMessage
         call	WriteString
         mov		eax, count
         sub		eax, 2
@@ -143,7 +141,7 @@ main PROC
         call	CrLf
 
         ; integer rounded average
-        mov		edx, OFFSET roundedAve_prompt
+        mov		edx, OFFSET roundedAvgMessage
         call	WriteString
         mov		eax, 0
         mov		eax, accumulator
@@ -151,16 +149,16 @@ main PROC
         mov		ebx, count
         sub		ebx, 2
         idiv	ebx
-        mov		roundedAve, eax
+        mov		roundedAvg, eax
         call	WriteInt
         call	CrLf
 
         ; integer average for accumulator
         mov		remainder, edx
-        mov		edx, OFFSET floating_point_prompt
+        mov		edx, OFFSET floatingPointMessage
         call	WriteString
         call	WriteInt
-        mov		edx, OFFSET floating_point_point
+        mov		edx, OFFSET decimalPointString
         call	WriteString
 
 
@@ -183,20 +181,18 @@ main PROC
         call	WriteDec
         call	CrLf
 
-
     ; say goodbye
     sayGoodbye:
         call	CrLf
-        mov		edx, OFFSET goodbye
+        mov		edx, OFFSET goodbyeMessage
         call	WriteString
         mov		edx, OFFSET userName
         call	WriteString
-        mov		edx, OFFSET floating_point_point
+        mov		edx, OFFSET decimalPointString
         call	WriteString
         call	CrLf
         call	CrLf
 
-; exit to operating system
 exit
 main ENDP
 
