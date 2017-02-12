@@ -56,10 +56,10 @@ val2 DWORD 16
 .code
 main PROC
     ; Set text color to teal
-    mov  eax, val2
-    imul eax, 16
-    add  eax, val1
-    call setTextColor
+    mov     eax, val2
+    imul    eax, 16
+    add     eax, val1
+    call    setTextColor
 
     ; Programmer name and title of assignment
     call	 CrLf
@@ -67,7 +67,7 @@ main PROC
     call	 WriteString
     call	 CrLf
 
-    ;ec prompts
+    ; ec prompts
     mov		 edx, OFFSET ecMessage1
     call	 WriteString
     call	 CrLf
@@ -78,13 +78,12 @@ main PROC
     ; get user name
     mov		edx, OFFSET namePrompt
     call	WriteString
-    call	CrLf
     mov		edx, OFFSET userName
     mov		ecx, SIZEOF userName
     call	ReadString
     mov		userNameByteCount, eax
 
-    ;test username
+    ; test username
     mov		edx, OFFSET greeting
     call	WriteString
     mov		edx, OFFSET userName
