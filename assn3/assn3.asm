@@ -159,7 +159,7 @@ main PROC
     mov		eax, remainder
     mov     ebx, NEG_ONE_THOUSAND
     mul     ebx
-    mov		remainder, eax ; eax now holds remainder * -1000
+    mov		remainder, eax
     mov		eax, count
     sub		eax, 2
     mov     ebx, ONE_THOUSAND
