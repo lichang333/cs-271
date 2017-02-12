@@ -24,10 +24,9 @@ constraintsMessage	   BYTE	 "Please enter numbers between [-100, -1].", 0
 quitMessage		       BYTE	 "Enter a non-negative number when you are finished to see results.", 0
 numInputPrompt		   BYTE	 " Enter a number: ", 0
 greetingMessage		   BYTE	 "Welcome, ", 0
-goodbyeMessage		   BYTE	 "Exiting Integer Accumulator program. Goodbye, ", 0
-number				   DWORD ?
+farewellMessage		   BYTE	 "Exiting Integer Accumulator program. Goodbye, ", 0
+number                 DWORD ?
 userName			   BYTE  21 DUP(0)
-userNameByteCount      DWORD ?
 count				   DWORD 1
 accumulator			   DWORD 0
 totalMessage		   BYTE	 "The total is:               ", 0
@@ -45,8 +44,8 @@ ecMessage2	           BYTE  "**EC: Number the lines during user input.", 0
 ecMessage3             BYTE  "**EC: Do something astoundingly creative (set background/text color).", 0
 textColor              DWORD 19
 backgroundColor        DWORD 16
-LOWERLIMIT       = -100
-UPPERLIMIT       = -1
+LOWER_LIMIT      = -100
+UPPER_LIMIT      = -1
 NEG_ONE_THOUSAND = -1000
 ONE_THOUSAND     = 1000
 
@@ -81,7 +80,6 @@ main PROC
     mov		edx, OFFSET userName
     mov		ecx, SIZEOF userName
     call	ReadString
-    mov		userNameByteCount, eax
     mov		edx, OFFSET greetingMessage
     call	WriteString
     mov		edx, OFFSET userName
@@ -107,19 +105,19 @@ main PROC
     call	WriteString
     call    ReadInt
     mov     number, eax
-    cmp		eax,LOWERLIMIT
-    jb		accumulate;
-    cmp		eax, UPPERLIMIT
-    jg		accumulate
+    cmp		eax, LOWER_LIMIT
+    jb		calculate;
+    cmp		eax, UPPER_LIMIT
+    jg		calculate
     add		eax, accumulator
     mov		accumulator, eax
     loop	getInput
 
     ; Count and accumulate the valid user numbers
-    accumulate:
+    calculate:
     mov		eax, count
     sub		eax, 2
-    jz		sayGoodbye
+    jz		farewell
     mov		eax, accumulator
     call	CrLF
 
@@ -178,9 +176,9 @@ main PROC
     call	CrLf
 
     ; Display a parting message (with the user's name).
-    sayGoodbye:
+    farewell:
     call	CrLf
-    mov		edx, OFFSET goodbyeMessage
+    mov		edx, OFFSET farewellMessage
     call	WriteString
     mov		edx, OFFSET userName
     call	WriteString
