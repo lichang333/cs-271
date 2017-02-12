@@ -30,17 +30,17 @@ userName			   BYTE  21 DUP(0)
 userNameByteCount      DWORD ?
 count				   DWORD 1
 accumulator			   DWORD 0
-totalMessage		   BYTE	 "The total is:                  ", 0
-numQuantityMessage     BYTE	 "Amount of numbers accumulated:  ", 0
-roundedAvgMessage	   BYTE	 "The rounded average is:        ", 0
+totalMessage		   BYTE	 "The total is:               ", 0
+numQuantityMessage     BYTE	 "Quantity of numbers:         ", 0
+roundedAvgMessage	   BYTE	 "The rounded average is:     ", 0
 roundedAvg		       DWORD 0
 remainder			   DWORD ?
 decimalPointString     BYTE	 ".",0
-floatingPointMessage   BYTE	 "As a floating-point number:    ", 0
+floatingPointMessage   BYTE	 "As a floating-point number: ", 0
 neg1k				   DWORD -1000
 onek				   DWORD 1000
 subtractor			   DWORD ?
-floating_point		   DWORD ?
+floatingPoint		   DWORD ?
 ecMessage1             BYTE  "**EC: Calculate and display the average as a floating-point number.", 0
 ecMessage2	           BYTE  "**EC: Number the lines during user input.", 0
 ecMessage3             BYTE  "**EC: Do something astoundingly creative (set background/text color).", 0
@@ -96,102 +96,96 @@ main PROC
     call	CrLf
     mov		ecx, 0
 
-
     ; loop to allow user to continue entering negative numbers
-    userNumbers:	;read user number
-        mov		eax, count
-        call	WriteDec
-        add		eax, 1
-        mov		count, eax
-        mov	    edx, OFFSET numInputPrompt
-        call	WriteString
-        call    ReadInt
-        mov     number, eax
-        cmp		eax,LOWERLIMIT
-        jb		accumulate;
-        cmp		eax, UPPERLIMIT
-        jg		accumulate
-        add		eax, accumulator
-        mov		accumulator, eax
-        loop	userNumbers
-
+    userNumbers:
+    mov		eax, count
+    call	WriteDec
+    add		eax, 1
+    mov		count, eax
+    mov	    edx, OFFSET numInputPrompt
+    call	WriteString
+    call    ReadInt
+    mov     number, eax
+    cmp		eax,LOWERLIMIT
+    jb		accumulate;
+    cmp		eax, UPPERLIMIT
+    jg		accumulate
+    add		eax, accumulator
+    mov		accumulator, eax
+    loop	userNumbers
 
     ; do the accumulation
     accumulate:
-        ; test if they entered any valid numbers, if they didnt, jump to the sayGoodbye
-        mov		eax, count
-        sub		eax, 2
-        jz		sayGoodbye
-        mov		eax, accumulator
-        call	CrLF
+    mov		eax, count
+    sub		eax, 2
+    jz		sayGoodbye
+    mov		eax, accumulator
+    call	CrLF
 
-        ; accumulated total
-        mov		edx, OFFSET  totalMessage
-        call	WriteString
-        mov		eax, accumulator
-        call	WriteInt
-        call	CrLF
+    ; accumulated total
+    mov		edx, OFFSET  totalMessage
+    call	WriteString
+    mov		eax, accumulator
+    call	WriteInt
+    call	CrLF
 
-        ; total numbers accumulated
-        mov		edx, OFFSET numQuantityMessage
-        call	WriteString
-        mov		eax, count
-        sub		eax, 2
-        call	WriteDec
-        call	CrLf
+    ; Display the number of negative numbers entered
+    mov		edx, OFFSET numQuantityMessage
+    call	WriteString
+    mov		eax, count
+    sub		eax, 2
+    call	WriteDec
+    call	CrLf
 
-        ; integer rounded average
-        mov		edx, OFFSET roundedAvgMessage
-        call	WriteString
-        mov		eax, 0
-        mov		eax, accumulator
-        cdq
-        mov		ebx, count
-        sub		ebx, 2
-        idiv	ebx
-        mov		roundedAvg, eax
-        call	WriteInt
-        call	CrLf
+    ; Display the average, rounded to the nearest integer
+    mov		edx, OFFSET roundedAvgMessage
+    call	WriteString
+    mov		eax, 0
+    mov		eax, accumulator
+    cdq
+    mov		ebx, count
+    sub		ebx, 2
+    idiv	ebx
+    mov		roundedAvg, eax
+    call	WriteInt
+    call	CrLf
 
-        ; integer average for accumulator
-        mov		remainder, edx
-        mov		edx, OFFSET floatingPointMessage
-        call	WriteString
-        call	WriteInt
-        mov		edx, OFFSET decimalPointString
-        call	WriteString
+    ; **EC: Calculate and display the average as a floating-point number, rounded to the nearest .001.
+    mov		remainder, edx
+    mov		edx, OFFSET floatingPointMessage
+    call	WriteString
+    call	WriteInt
+    mov		edx, OFFSET decimalPointString
+    call	WriteString
 
+    ; fancy stuff for floating point creation
+    mov		eax, remainder
+    mul		neg1k
+    mov		remainder, eax ; eax now holds remainder * -1000
+    mov		eax, count
+    sub		eax, 2		   ; ebx now holds something?
+    mul		onek
+    mov		subtractor, eax
 
-        ; fancy stuff for floating point creation
-        mov		eax, remainder
-        mul		neg1k
-        mov		remainder, eax ; eax now holds remainder * -1000
-        mov		eax, count
-        sub		eax, 2		   ; ebx now holds something?
-        mul		onek
-        mov		subtractor, eax
+    ; fancy stack stuff for floating point creation
+    fld		remainder
+    fdiv	subtractor
+    fimul	onek
+    frndint
+    fist	floatingPoint
+    mov		eax, floatingPoint
+    call	WriteDec
+    call	CrLf
 
-        ; fancy stack stuff for floating point creation
-        fld		remainder
-        fdiv	subtractor
-        fimul	onek
-        frndint
-        fist	floating_point
-        mov		eax, floating_point
-        call	WriteDec
-        call	CrLf
-
-    ; say goodbye
+    ; Display a parting message (with the user's name).
     sayGoodbye:
-        call	CrLf
-        mov		edx, OFFSET goodbyeMessage
-        call	WriteString
-        mov		edx, OFFSET userName
-        call	WriteString
-        mov		edx, OFFSET decimalPointString
-        call	WriteString
-        call	CrLf
-        call	CrLf
+    call	CrLf
+    mov		edx, OFFSET goodbyeMessage
+    call	WriteString
+    mov		edx, OFFSET userName
+    call	WriteString
+    call	CrLf
+    call	CrLf
 
 exit
 main ENDP
