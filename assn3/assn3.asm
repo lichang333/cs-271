@@ -97,8 +97,8 @@ main PROC
     call	CrLf
     mov		ecx, 0
 
-    ; loop to allow user to continue entering negative numbers
-    userNumbers:
+    ; Repeatedly prompt the user to enter a number.
+    getInput:
     mov		eax, count
     call	WriteDec
     add		eax, 1
@@ -113,9 +113,9 @@ main PROC
     jg		accumulate
     add		eax, accumulator
     mov		accumulator, eax
-    loop	userNumbers
+    loop	getInput
 
-    ; do the accumulation
+    ; Count and accumulate the valid user numbers
     accumulate:
     mov		eax, count
     sub		eax, 2
@@ -123,14 +123,14 @@ main PROC
     mov		eax, accumulator
     call	CrLF
 
-    ; accumulated total
+    ; Display the sum of negative numbers entered.
     mov		edx, OFFSET  totalMessage
     call	WriteString
     mov		eax, accumulator
     call	WriteInt
     call	CrLF
 
-    ; Display the number of negative numbers entered
+    ; Display the number of negative numbers entered.
     mov		edx, OFFSET numQuantityMessage
     call	WriteString
     mov		eax, count
@@ -138,7 +138,7 @@ main PROC
     call	WriteDec
     call	CrLf
 
-    ; Display the average, rounded to the nearest integer
+    ; Display the average, rounded to the nearest integer.
     mov		edx, OFFSET roundedAvgMessage
     call	WriteString
     mov		eax, 0
@@ -158,8 +158,6 @@ main PROC
     call	WriteInt
     mov		edx, OFFSET decimalPointString
     call	WriteString
-
-    ; fancy stuff for floating point creation
     mov		eax, remainder
     mov     ebx, NEG_ONE_THOUSAND
     mul     ebx
@@ -169,8 +167,6 @@ main PROC
     mov     ebx, ONE_THOUSAND
     mul		ebx
     mov		subtractor, eax
-
-    ; fancy stack stuff for floating point creation
     fld		remainder
     fdiv	subtractor
     mov     temp, ONE_THOUSAND
