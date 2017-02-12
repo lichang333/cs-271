@@ -18,11 +18,11 @@ TITLE Programming Assignment #3 (assn3.asm)
 INCLUDE Irvine32.inc
 
 .data
-welcome				   BYTE	 "Welcome to the amazing Integer Accumulator by Alec Merdler", 0
+programPrompt		   BYTE	 "Fibonacci Numbers, programmed by Alec Merdler", 0
+namePrompt			   BYTE	 "Enter your name: ", 0
 instructions_1		   BYTE	 "Please enter numbers between [-100, -1].", 0
 instructions_2		   BYTE	 "Then, enter a non-negative number to see the amazing accumulator in action!", 0
 instructions_3		   BYTE	 " Enter a number: ", 0
-userNameInstructions   BYTE	 "What's your name, friend?", 0
 greeting			   BYTE	 "Hi, ", 0
 goodbye				   BYTE	 "Ta ta for now, ", 0
 number				   DWORD ?
@@ -41,16 +41,14 @@ neg1k				   DWORD -1000
 onek				   DWORD 1000
 subtractor			   DWORD ?
 floating_point		   DWORD ?
+ecMessage1             BYTE  "**EC: Calculate and display the average as a floating-point number.", 0
+ecMessage2	           BYTE  "**EC: Number the lines during user input.", 0
 
-;ec promp
-ec_prompt_1 BYTE "EC: Display as floating point value.", 0
-ec_prompt_2	BYTE "EC: Lines are numbered during user input.", 0
-
-;constants
+; constants
 LOWERLIMIT = -100
 UPPERLIMIT = -1
 
-;change text color, because white text is a little boring after a while
+; change text color, because white text is a little boring after a while
 val1 DWORD 11
 val2 DWORD 16
 
@@ -58,27 +56,27 @@ val2 DWORD 16
 .code
 main PROC
     ; Set text color to teal
-        mov  eax, val2
-        imul eax, 16
-        add  eax, val1
-        call setTextColor
+    mov  eax, val2
+    imul eax, 16
+    add  eax, val1
+    call setTextColor
 
     ; Programmer name and title of assignment
     call	 CrLf
-    mov		 edx, OFFSET welcome
+    mov		 edx, OFFSET programPrompt
     call	 WriteString
     call	 CrLf
 
     ;ec prompts
-    mov		 edx, OFFSET ec_prompt_1
+    mov		 edx, OFFSET ecMessage1
     call	 WriteString
     call	 CrLf
-    mov		 edx, OFFSET ec_prompt_2
+    mov		 edx, OFFSET ecMessage2
     call	 WriteString
     call	 CrLf
 
     ; get user name
-    mov		edx, OFFSET userNameInstructions
+    mov		edx, OFFSET namePrompt
     call	WriteString
     call	CrLf
     mov		edx, OFFSET userName
