@@ -37,8 +37,7 @@ roundedAvg		       DWORD 0
 remainder			   DWORD ?
 decimalPointString     BYTE	 ".",0
 floatingPointMessage   BYTE	 "As a floating-point number: ", 0
-neg1k				   DWORD -1000
-onek				   DWORD 1000
+temp				   DWORD ?
 subtractor			   DWORD ?
 floatingPoint		   DWORD ?
 ecMessage1             BYTE  "**EC: Calculate and display the average as a floating-point number.", 0
@@ -46,8 +45,10 @@ ecMessage2	           BYTE  "**EC: Number the lines during user input.", 0
 ecMessage3             BYTE  "**EC: Do something astoundingly creative (set background/text color).", 0
 textColor              DWORD 19
 backgroundColor        DWORD 16
-LOWERLIMIT = -100
-UPPERLIMIT = -1
+LOWERLIMIT       = -100
+UPPERLIMIT       = -1
+NEG_ONE_THOUSAND = -1000
+ONE_THOUSAND     = 1000
 
 .code
 main PROC
@@ -160,17 +161,20 @@ main PROC
 
     ; fancy stuff for floating point creation
     mov		eax, remainder
-    mul		neg1k
+    mov     ebx, NEG_ONE_THOUSAND
+    mul     ebx
     mov		remainder, eax ; eax now holds remainder * -1000
     mov		eax, count
-    sub		eax, 2		   ; ebx now holds something?
-    mul		onek
+    sub		eax, 2
+    mov     ebx, ONE_THOUSAND
+    mul		ebx
     mov		subtractor, eax
 
     ; fancy stack stuff for floating point creation
     fld		remainder
     fdiv	subtractor
-    fimul	onek
+    mov     temp, ONE_THOUSAND
+    fimul	temp
     frndint
     fist	floatingPoint
     mov		eax, floatingPoint
