@@ -11,10 +11,8 @@ TITLE Programming Assignment #4 (assn4.asm)
 INCLUDE Irvine32.inc
 
 .data
-welcome					   BYTE	  "Welcome to Composites by Alec Merdler.", 0
-instructions_1			   BYTE	  "Please enter a number between [1, 400] to see all ",0
-instructions_2			   BYTE   "of the composites up to and including the number you entered", 0
-instructions_3			   BYTE   "Please enter a number between 1 and 400.", 0
+welcomeMessage			   BYTE	  "Composites Numbers, programmed by Alec Merdler", 0
+inputPrompt			       BYTE	  "Enter number of composites to display [1, 400]: ", 0
 belowError				   BYTE   "The number you entered was too small. ", 0
 aboveError				   BYTE   "The number you entered was too big. ", 0
 spaces					   BYTE	  "   ", 0
@@ -33,8 +31,8 @@ writeCount				   DWORD  0
 tenn				       DWORD  10
 
 ; constants
-LOWERLIMIT = 1
-UPPERLIMIT = 400
+LOWER_LIMIT = 1
+UPPER_LIMIT = 400
 
 ; change text color, because white text is a little boring after a while
 val1 DWORD 11
@@ -42,83 +40,73 @@ val2 DWORD 16
 
 .code
 main PROC
-	call changeColor
-	call introduction
-	call getUserData
-		;validate
-	call showComposites
-		;validate is composite
-	call farewell
+    call changeColor
+    call introduction
+    call getUserData
+    ; validate
+    call showComposites
+    ; validate is composite
+    call farewell
 
-	exit
+    exit
 main ENDP
 
 changeColor PROC
-	; Set text color to teal
-    mov  eax, val2
-    imul eax, 16
-    add  eax, val1
-    call setTextColor
+    ; Set text color to teal
+    mov     eax, val2
+    imul    eax, 16
+    add     eax, val1
+    call    setTextColor
     ret
 changeColor	ENDP
 
 introduction PROC
-	; Programmer name and title of assignment
-	call	 CrLf
-	mov		 edx, OFFSET welcome
-	call	 WriteString
-	call	 CrLf
-
-	; assignment instructions
-	mov		edx, OFFSET instructions_1
-	call	WriteString
-	mov		edx, OFFSET instructions_2
-	call	WriteString
-	call	CrLf
-	mov		ecx, 0
-	ret
-
+    call    CrLf
+    mov	    edx, OFFSET welcomeMessage
+    call    WriteString
+    call    CrLf
+    ret
 introduction ENDP
 
 getUserData PROC
-	; loop to allow user to continue entering negative numbers
-	userNumberLoop:
+    ; loop to allow user to continue entering negative numbers
+    userNumberLoop:
+    mov		edx, OFFSET inputPrompt
+    call	WriteString
+    mov		ecx, 0
     mov		eax, count
     add		eax, 1
     mov		count, eax
-    mov		edx, OFFSET instructions_3
-    call	WriteString
     call	CrLf
     call    ReadInt
     mov     userNumber, eax
-    cmp		eax,LOWERLIMIT
+    cmp		eax, LOWER_LIMIT
     jb		errorBelow
-    cmp		eax, UPPERLIMIT
+    cmp		eax, UPPER_LIMIT
     jg		errorAbove
     jmp		continue
 
-	; validation
-	errorBelow:
+    ; validation
+    errorBelow:
     mov		edx, OFFSET belowError
     call	WriteString
     call	CrLf
     jmp		userNumberLoop
 
-	errorAbove:
+    errorAbove:
     mov		edx, OFFSET aboveError
     call	WriteString
     call	CrLf
     jmp		userNumberLoop
-    
-	continue:
+
+    continue:
     ; prep the loop
     mov		ecx, 4
     mov		userNumberTemp, ecx
 
     cmp		ecx, userNumber
     ja		farewell
-
-	ret
+    ret
 getUserData ENDP
 
 showComposites PROC
@@ -170,9 +158,7 @@ showComposites PROC
     jmp		exitInnerLoop
 
     skipPrint:
-
     mov		ebx, innerCompare
-
     sub		eax, 1
     cmp		eax, ebx
     jae		skipIncrement
@@ -187,17 +173,17 @@ showComposites PROC
     inc		eax
     mov		outerCompare, eax
     loop	outerLoop
-
-	ret
+    ret
 showComposites ENDP
 
 farewell PROC
-	; say goodbye
-	call	CrLf
-	mov		edx, OFFSET goodbye
-	call	WriteString
-	call	CrLf
-	call	CrLf
-	exit
+    ; say goodbye
+    call	CrLf
+    mov		edx, OFFSET goodbye
+    call	WriteString
+    call	CrLf
+    call	CrLf
+    exit
 farewell ENDP
+
 END main
