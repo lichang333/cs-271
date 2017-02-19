@@ -13,12 +13,12 @@ INCLUDE Irvine32.inc
 .data
 welcomeMessage			   BYTE	  "Composites Numbers, programmed by Alec Merdler", 0
 inputPrompt			       BYTE	  "Enter number of composites to display [1, 400]: ", 0
-belowError				   BYTE   "The number you entered was too small. ", 0
-aboveError				   BYTE   "The number you entered was too big. ", 0
+inputLowMessage			   BYTE   "The number you entered was too small. ", 0
+inputHighMessage		   BYTE   "The number you entered was too big. ", 0
 showMorePrompt             BYTE   "Press enter to show more.", 0
-spaces					   BYTE	  "   ", 0
+spacesMessage			   BYTE	  "   ", 0
 farewellMessage			   BYTE	  "Farewell!", 0
-userNumber				   DWORD  ?
+numValues				   DWORD  ?
 currentValue               DWORD  ?
 isCompositeFlag            DWORD  0
 currentRow                 DWORD  0
@@ -73,7 +73,7 @@ getUserData PROC
     mov		edx, OFFSET inputPrompt
     call	WriteString
     call    ReadInt
-    mov     userNumber, eax
+    mov     numValues, eax
     cmp		eax, LOWER_LIMIT
     jb		invalidLow
     cmp		eax, UPPER_LIMIT
@@ -81,13 +81,13 @@ getUserData PROC
     jmp		valid
 
     invalidHigh:
-    mov		edx, OFFSET aboveError
+    mov		edx, OFFSET inputHighMessage
     call	WriteString
     call	CrLf
     jmp		getInput
 
     invalidLow:
-    mov		edx, OFFSET belowError
+    mov		edx, OFFSET inputLowMessage
     call	WriteString
     call	CrLf
     jmp		getInput
@@ -101,12 +101,12 @@ getUserData ENDP
 ; ==============================================================================
 ;   Procedure: showComposites
 ; Description: Calculate and display the number of composites stored in
-;              <userNumber>.
+;              <numValues>.
 ; ==============================================================================
 showComposites PROC
     ; Set initial value of the potential composite number and loop counter
     mov     currentValue, 4
-    mov     ecx, userNumber
+    mov     ecx, numValues
 
     ; Call procedure to check if the current value is composite, then print
     calculate:
@@ -121,7 +121,7 @@ showComposites PROC
     cmp     currentRow, VALUES_PER_ROW
     je      newRow
     ; Print spaces if not on a new row
-    mov     edx, OFFSET spaces
+    mov     edx, OFFSET spacesMessage
     call    WriteString
     jmp     nextComposite
 
