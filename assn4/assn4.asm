@@ -16,7 +16,7 @@ inputPrompt			       BYTE	  "Enter number of composites to display [1, 400]: ", 
 belowError				   BYTE   "The number you entered was too small. ", 0
 aboveError				   BYTE   "The number you entered was too big. ", 0
 spaces					   BYTE	  "   ", 0
-goodbye					   BYTE	  "Farewell!", 0
+farewellMessage			   BYTE	  "Farewell!", 0
 number					   DWORD  ?
 count					   DWORD  1
 userNumber				   DWORD  ?
@@ -28,36 +28,28 @@ outerCompare			   DWORD  ?
 innerCompare			   DWORD  ?
 writeCount				   DWORD  0
 
-; constants
 LOWER_LIMIT = 1
 UPPER_LIMIT = 400
 
-; change text color, because white text is a little boring after a while
-val1 DWORD 11
-val2 DWORD 16
 
 .code
+; ==============================================================================
+;   Procedure: main
+; Description: Calls other procedures to drive the program.
+; ==============================================================================
 main PROC
-    call changeColor
     call introduction
     call getUserData
-    ; validate
     call showComposites
-    ; validate is composite
     call farewell
-
     exit
 main ENDP
 
-changeColor PROC
-    ; Set text color to teal
-    mov     eax, val2
-    imul    eax, 16
-    add     eax, val1
-    call    setTextColor
-    ret
-changeColor	ENDP
 
+; ==============================================================================
+;   Procedure: introduction
+; Description:
+; ==============================================================================
 introduction PROC
     call    CrLf
     mov	    edx, OFFSET welcomeMessage
@@ -66,6 +58,11 @@ introduction PROC
     ret
 introduction ENDP
 
+
+; ==============================================================================
+;   Procedure: getUserData
+; Description:
+; ==============================================================================
 getUserData PROC
     ; loop to allow user to continue entering negative numbers
     userNumberLoop:
@@ -107,6 +104,11 @@ getUserData PROC
     ret
 getUserData ENDP
 
+
+; ==============================================================================
+;   Procedure: showComposites
+; Description:
+; ==============================================================================
 showComposites PROC
     ; for inner loop
     mov		eax, userNumber
@@ -174,10 +176,14 @@ showComposites PROC
     ret
 showComposites ENDP
 
+
+; ==============================================================================
+;   Procedure: farewell
+; Description: Prints farewell message.
+; ==============================================================================
 farewell PROC
-    ; say goodbye
     call	CrLf
-    mov		edx, OFFSET goodbye
+    mov		edx, OFFSET farewellMessage
     call	WriteString
     call	CrLf
     call	CrLf
