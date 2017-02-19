@@ -101,6 +101,7 @@ showComposites PROC
     mov     currentValue, 4
     mov     ecx, userNumber
 
+    ; Call procedure to check if the current value is composite, then print
     calculate:
     call    isComposite
     cmp     isCompositeFlag, 1
@@ -108,15 +109,18 @@ showComposites PROC
     ; Print the composite number
     mov     eax, currentValue
     call    WriteDec
-    mov     edx, OFFSET spaces
-    call    WriteString
-
+    ; Check if a new row is needed
     add     currentRow, 1
     cmp     currentRow, VALUES_PER_ROW
     je      newRow
+    ; Print spaces if not on a new row
+    mov     edx, OFFSET spaces
+    call    WriteString
     jmp     nextComposite
 
+    ; Reset row counter and print a newline
     newRow:
+    mov     currentRow, 0
     call    CrLf
     jmp     nextComposite
 
@@ -125,6 +129,7 @@ showComposites PROC
     add     ecx, 1
     jmp     nextComposite
 
+    ; Increment the current value and loop
     nextComposite:
     add     currentValue, 1
     loop    calculate
