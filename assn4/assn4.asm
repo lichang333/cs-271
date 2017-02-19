@@ -128,6 +128,17 @@ showComposites ENDP
 ; ==============================================================================
 isComposite PROC
     mov    isCompositeFlag, 1
+    mov    ebx, currentValue
+
+    ; Subtract 1 from current divisor, divide current value and check remainder
+    checkComposite:
+    sub    ebx, 1
+    mov    edx, currentValue
+    mov    eax, currentValue
+    cdq
+    div    ebx
+    cmp    edx, 0
+    jg     checkComposite
 
     ret
 isComposite ENDP
