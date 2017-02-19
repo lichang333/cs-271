@@ -48,7 +48,7 @@ main ENDP
 
 ; ==============================================================================
 ;   Procedure: introduction
-; Description:
+; Description: Prints welcome message.
 ; ==============================================================================
 introduction PROC
     call    CrLf
@@ -61,40 +61,38 @@ introduction ENDP
 
 ; ==============================================================================
 ;   Procedure: getUserData
-; Description:
+; Description: Prompt user for number of composites to show, performing input
+;              validation where needed.
 ; ==============================================================================
 getUserData PROC
-    ; loop to allow user to continue entering negative numbers
-    userNumberLoop:
+    getInput:
     mov		edx, OFFSET inputPrompt
     call	WriteString
     mov		ecx, 0
     mov		eax, count
     add		eax, 1
     mov		count, eax
-    call	CrLf
     call    ReadInt
     mov     userNumber, eax
     cmp		eax, LOWER_LIMIT
-    jb		errorBelow
+    jb		invalidLow
     cmp		eax, UPPER_LIMIT
-    jg		errorAbove
-    jmp		continue
+    jg		invalidHigh
+    jmp		valid
 
-    ; validation
-    errorBelow:
-    mov		edx, OFFSET belowError
-    call	WriteString
-    call	CrLf
-    jmp		userNumberLoop
-
-    errorAbove:
+    invalidHigh:
     mov		edx, OFFSET aboveError
     call	WriteString
     call	CrLf
-    jmp		userNumberLoop
+    jmp		getInput
 
-    continue:
+    invalidLow:
+    mov		edx, OFFSET belowError
+    call	WriteString
+    call	CrLf
+    jmp		getInput
+
+    valid:
     ; prep the loop
     mov		ecx, 4
     mov		userNumberTemp, ecx
@@ -107,7 +105,8 @@ getUserData ENDP
 
 ; ==============================================================================
 ;   Procedure: showComposites
-; Description:
+; Description: Calculate and display the number of composites stored in
+;              <userNumber>.
 ; ==============================================================================
 showComposites PROC
     ; for inner loop
@@ -143,7 +142,7 @@ showComposites PROC
     div		innerCompare
     cmp		edx, 0
     jne		skipPrint
-    ; print out Composites
+    ; print out composites
     mov		eax, outerCompare
     call	WriteDec
     mov		edx, OFFSET spaces
