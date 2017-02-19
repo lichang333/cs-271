@@ -115,6 +115,7 @@ showComposites PROC
     jmp     nextComposite
 
     nextComposite:
+    add     currentValue, 1
     loop    calculate
 
     ret
@@ -127,7 +128,7 @@ showComposites ENDP
 ;              <currentValue> is a composite number.
 ; ==============================================================================
 isComposite PROC
-    mov    isCompositeFlag, 1
+    mov    isCompositeFlag, 0
     mov    ebx, currentValue
 
     ; Subtract 1 from current divisor, divide current value and check remainder
@@ -139,6 +140,21 @@ isComposite PROC
     div    ebx
     cmp    edx, 0
     jg     checkComposite
+
+    checkPrime:
+    cmp    ebx, 1
+    jg     isNotPrime
+    jl     isPrime
+
+    isPrime:
+    mov    isCompositeFlag, 0
+    jmp    finished
+
+    isNotPrime:
+    mov    isCompositeFlag, 1
+    jmp    finished
+
+    finished:
 
     ret
 isComposite ENDP
