@@ -20,9 +20,11 @@ farewellMessage			   BYTE	  "Farewell!", 0
 userNumber				   DWORD  ?
 currentValue               DWORD  ?
 isCompositeFlag            DWORD  0
+currentRow                 DWORD  0
 
-LOWER_LIMIT = 1
-UPPER_LIMIT = 400
+LOWER_LIMIT    = 1
+UPPER_LIMIT    = 400
+VALUES_PER_ROW = 10
 
 
 .code
@@ -106,6 +108,15 @@ showComposites PROC
     ; Print the composite number
     mov     eax, currentValue
     call    WriteDec
+    mov     edx, OFFSET spaces
+    call    WriteString
+
+    add     currentRow, 1
+    cmp     currentRow, VALUES_PER_ROW
+    je      newRow
+    jmp     nextComposite
+
+    newRow:
     call    CrLf
     jmp     nextComposite
 
