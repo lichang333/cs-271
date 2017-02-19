@@ -17,16 +17,9 @@ belowError				   BYTE   "The number you entered was too small. ", 0
 aboveError				   BYTE   "The number you entered was too big. ", 0
 spaces					   BYTE	  "   ", 0
 farewellMessage			   BYTE	  "Farewell!", 0
-number					   DWORD  ?
-count					   DWORD  1
 userNumber				   DWORD  ?
-userNumberTemp			   DWORD  ?
-innerLoopCount			   DWORD  ?
-outerLoopCount			   DWORD  ?
-underScore				   BYTE	  " _ ", 0
-outerCompare			   DWORD  ?
-innerCompare			   DWORD  ?
-writeCount				   DWORD  0
+currentValue               DWORD  ?
+isCompositeFlag            DWORD  0
 
 LOWER_LIMIT = 1
 UPPER_LIMIT = 400
@@ -42,6 +35,7 @@ main PROC
     call getUserData
     call showComposites
     call farewell
+
     exit
 main ENDP
 
@@ -55,6 +49,7 @@ introduction PROC
     mov	    edx, OFFSET welcomeMessage
     call    WriteString
     call    CrLf
+
     ret
 introduction ENDP
 
@@ -68,10 +63,6 @@ getUserData PROC
     getInput:
     mov		edx, OFFSET inputPrompt
     call	WriteString
-    mov		ecx, 0
-    mov		eax, count
-    add		eax, 1
-    mov		count, eax
     call    ReadInt
     mov     userNumber, eax
     cmp		eax, LOWER_LIMIT
@@ -93,12 +84,7 @@ getUserData PROC
     jmp		getInput
 
     valid:
-    ; prep the loop
-    mov		ecx, 4
-    mov		userNumberTemp, ecx
 
-    cmp		ecx, userNumber
-    ja		farewell
     ret
 getUserData ENDP
 
@@ -109,71 +95,42 @@ getUserData ENDP
 ;              <userNumber>.
 ; ==============================================================================
 showComposites PROC
-    ; for inner loop
-    mov		eax, userNumber
-    sub		eax, 2
-    mov		innerLoopCount, eax
+    ; Set initial value of the potential composite number and loop counter
+    mov     currentValue, 4
+    mov     ecx, userNumber
 
-    ; for outer loop
-    mov		eax, userNumber
-    sub		eax, 3
-    mov		outerLoopCount, eax
-    mov		ecx, outerLoopCount
-    mov		eax, 4
-    mov		outerCompare, eax
+    calculate:
+    call    isComposite
+    cmp     isCompositeFlag, 1
+    jl      notComposite
+    ; Print the composite number
+    mov     eax, currentValue
+    call    WriteDec
+    call    CrLf
+    jmp     nextComposite
 
-    ; reset inner loop after each complete inner loop cycle
-    mov		eax, 2
-    mov		innerCompare, eax
-    call	CrLf
+    ; Add 1 back to loop counter because the number was not composite
+    notComposite:
+    add     ecx, 1
+    jmp     nextComposite
 
-    outerLoop:
-    skipCarry:
-    mov		eax, 2
-    mov		innerCompare, eax
-    mov		eax, outerCompare
-    push	ecx
-    push	eax
-    mov		ecx, innerLoopCount
+    nextComposite:
+    loop    calculate
 
-    isComposite:
-    mov		eax, outerCompare
-    mov		edx, 0
-    div		innerCompare
-    cmp		edx, 0
-    jne		skipPrint
-    ; print out composites
-    mov		eax, outerCompare
-    call	WriteDec
-    mov		edx, OFFSET spaces
-    call	WriteString
-    mov		ebx, writeCount
-    inc		ebx
-    mov		writeCount, ebx
-    cmp		ebx, 10
-    jne		exitInnerLoop
-    call	CrLf
-    mov		writeCount,esi
-    jmp		exitInnerLoop
-
-    skipPrint:
-    mov		ebx, innerCompare
-    sub		eax, 1
-    cmp		eax, ebx
-    jae		skipIncrement
-    add		eax, 1
-    mov		innerCompare, eax
-    skipIncrement:
-    loop isComposite
-    exitInnerLoop:
-
-    pop		eax
-    pop		ecx
-    inc		eax
-    mov		outerCompare, eax
-    loop	outerLoop
     ret
 showComposites ENDP
+
+
+; ==============================================================================
+;   Procedure: isComposite
+; Description: Sets <isCompositeFlag> to either 0 or 1 if the value stored in
+;              <currentValue> is a composite number.
+; ==============================================================================
+isComposite PROC
+    mov    isCompositeFlag, 1
+
+    ret
+isComposite ENDP
 
 
 ; ==============================================================================
@@ -186,6 +143,7 @@ farewell PROC
     call	WriteString
     call	CrLf
     call	CrLf
+
     exit
 farewell ENDP
 
