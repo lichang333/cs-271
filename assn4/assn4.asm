@@ -15,12 +15,15 @@ welcomeMessage			   BYTE	  "Composites Numbers, programmed by Alec Merdler", 0
 inputPrompt			       BYTE	  "Enter number of composites to display [1, 400]: ", 0
 belowError				   BYTE   "The number you entered was too small. ", 0
 aboveError				   BYTE   "The number you entered was too big. ", 0
+showMorePrompt             BYTE   "Press enter to show more.", 0
 spaces					   BYTE	  "   ", 0
 farewellMessage			   BYTE	  "Farewell!", 0
 userNumber				   DWORD  ?
 currentValue               DWORD  ?
 isCompositeFlag            DWORD  0
 currentRow                 DWORD  0
+currentPage                DWORD  0
+ec2Message                 BYTE   "**EC: Display more composites, but show them one page at a time.", 0
 
 LOWER_LIMIT    = 1
 UPPER_LIMIT    = 400
@@ -44,12 +47,16 @@ main ENDP
 
 ; ==============================================================================
 ;   Procedure: introduction
-; Description: Prints welcome message.
+; Description: Prints welcome message and extra credit messages.
 ; ==============================================================================
 introduction PROC
     call    CrLf
     mov	    edx, OFFSET welcomeMessage
     call    WriteString
+    call    CrLf
+    mov     edx, OFFSET ec2Message
+    call    WriteString
+    call    CrLf
     call    CrLf
 
     ret
@@ -119,7 +126,12 @@ showComposites PROC
     jmp     nextComposite
 
     ; Reset row counter and print a newline
+    ; **EC: Prompt user to press enter to show next page
     newRow:
+    call    CrLf
+    mov     edx, OFFSET showMorePrompt
+    call    WriteString
+    call    ReadInt
     mov     currentRow, 0
     call    CrLf
     jmp     nextComposite
