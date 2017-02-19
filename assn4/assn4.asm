@@ -24,11 +24,9 @@ userNumberTemp			   DWORD  ?
 innerLoopCount			   DWORD  ?
 outerLoopCount			   DWORD  ?
 underScore				   BYTE	  " _ ", 0
-barr					   BYTE	  " | ", 0
 outerCompare			   DWORD  ?
 innerCompare			   DWORD  ?
 writeCount				   DWORD  0
-tenn				       DWORD  10
 
 ; constants
 LOWER_LIMIT = 1
