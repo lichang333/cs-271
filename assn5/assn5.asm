@@ -28,21 +28,17 @@ descriptionMessage1        BYTE   "This program generates random numbers in the 
 descriptionMessage2        BYTE   "displays the original list, sorts the list, and calculates the", 0
 descriptionMessage3        BYTE   "median value.  Finally, it displays the list sorted in descending order.", 0
 inputPrompt			       BYTE	  "How many numbers should be generated? [10 .. 200]: ", 0
-belowError				   BYTE   "The number you entered was too small. ", 0
-aboveError				   BYTE   "The number you entered was too big. ", 0
-medianString			   BYTE	  "The median is: ",0
+invalidLowMessage		   BYTE   "The number you entered was too small. ", 0
+invalidHighMessage		   BYTE   "The number you entered was too big. ", 0
+medianMessage			   BYTE	  "The median is: ",0
 spaces					   BYTE	  "   ", 0
-goodbye					   BYTE	  "Goodbye for now!", 0
-beforeSort				   BYTE	  "The array before sorting: ", 0
-afterSort				   BYTE	  "The array after sorting: ", 0
+farewellMessage			   BYTE	  "Farewell!", 0
+preSortMessage		       BYTE	  "The array before sorting: ", 0
+postSortMessage			   BYTE	  "The array after sorting: ", 0
 number					   DWORD  ?
 request					   DWORD  ?
 requestTemp			       DWORD  ?
 list					   DWORD MAX_SIZE DUP(?)
-
-; change text color
-val1 DWORD 11
-val2 DWORD 16
 
 
 .code
@@ -63,7 +59,7 @@ main PROC
     push request
     call fillArray
 
-    mov  edx, OFFSET beforeSort
+    mov  edx, OFFSET preSortMessage
     call WriteString
     call CrLf
     push OFFSET list
@@ -81,7 +77,7 @@ main PROC
 
 
     call CrLf
-    mov  edx, OFFSET afterSort
+    mov  edx, OFFSET postSortMessage
     call WriteString
     call CrLf
     push OFFSET list
@@ -121,39 +117,39 @@ introduction ENDP
 ; Registers Changed: edx, eax,
 ; ====================================================================================================================
 getData PROC
-    ; loop to allow user to continue entering numbers until within range of MIN and MAX
+    ; Loop to allow user to continue entering numbers until within range of MIN and MAX
     push ebp
     mov	 ebp, esp
-    mov	 ebx, [ebp + 8] ; get address of request into ebx    (lecture 18)
+    mov	 ebx, [ebp + 8]
 
-    userNumberLoop:
+    getInput:
     mov     edx, OFFSET inputPrompt
     call	WriteString
     call    ReadInt
-    mov     [ebx], eax		; save the user's request into var request
+    ; Save the user's request into var request
+    mov     [ebx], eax
     cmp		eax, MIN
-    jb		errorBelow
+    jb		invalidLow
     cmp		eax, MAX
-    jg		errorAbove
+    jg		invalidHigh
     jmp		continue
 
-    ; validation
-    errorBelow:
-    mov		edx, OFFSET belowError
+    invalidLow:
+    mov		edx, OFFSET invalidLowMessage
     call	WriteString
     call	CrLf
-    jmp		userNumberLoop
+    jmp		getInput
 
-    errorAbove:
-    mov		edx, OFFSET aboveError
+    invalidHigh:
+    mov		edx, OFFSET invalidHighMessage
     call	WriteString
     call	CrLf
-    jmp		userNumberLoop
+    jmp		getInput
 
     continue:
-        pop ebp
+    pop ebp
 
-    ; clean up the stack. we only have 1 extra DWORD to get rid of.
+    ; Clean up the stack by removing extra DWORD
     ret 4
 getData ENDP
 
@@ -170,17 +166,20 @@ getData ENDP
 fillArray PROC
     push ebp
     mov  ebp, esp
-    mov  esi, [ebp + 12]  ; @list
-    mov	 ecx, [ebp + 8]   ; loop control based on request
+    mov  esi, [ebp + 12]
+    mov	 ecx, [ebp + 8]
 
     fillArrLoop:
     mov		eax, HI
     sub		eax, LO
     inc		eax
+    ; Put random number in array
     call	RandomRange
     add		eax, LO
-    mov		[esi], eax  ; put random number in array
-    add		esi, 4		; next element
+    mov		[esi], eax
+
+    ; Proceed to next element
+    add		esi, 4
     loop	fillArrLoop
 
     pop  ebp
@@ -200,9 +199,9 @@ fillArray ENDP
 displayList PROC
     push ebp
     mov  ebp, esp
-    mov	 ebx, 0			  ; counting to 10 for ouput
-    mov  esi, [ebp + 12]  ; @list
-    mov	 ecx, [ebp + 8]   ; loop control based on request
+    mov	 ebx, 0
+    mov  esi, [ebp + 12]
+    mov	 ecx, [ebp + 8]
 
     displayLoop:
     ; Get current element
@@ -216,8 +215,9 @@ displayList PROC
     call	CrLf
     mov		ebx,0
 
+    ; Proceed to next element
     skipCarry:
-    add		esi, 4		; next element
+    add		esi, 4
     loop	displayLoop
 
     endDisplayLoop:
@@ -238,17 +238,18 @@ displayList ENDP
 sortList PROC
     push ebp
     mov  ebp, esp
-    mov  esi, [ebp + 12]			; @list
-    mov	 ecx, [ebp + 8]				; loop control based on request
+    mov  esi, [ebp + 12]
+    mov	 ecx, [ebp + 8]
     dec	 ecx
 
+    ; Get current element and save outer loop counter
     outerLoop:
-    mov		eax, [esi]			; get current element
+    mov		eax, [esi]
     mov		edx, esi
-    push	ecx					; save outer loop counter
+    push	ecx
 
     innerLoop:
-    mov		ebx, [esi+4]
+    mov		ebx, [esi + 4]
     mov		eax, [edx]
     cmp		eax, ebx
     jge		skipSwitch
@@ -258,16 +259,19 @@ sortList PROC
     push	ecx
     call	exchange
     sub		esi, 4
+
     skipSwitch:
     add		esi,4
 
     loop	innerLoop
 
+    ; Restore outer loop counter and reset esi
     skippit:
-    pop		ecx 			; restore outer loop counter
-    mov		esi, edx		; reset esi
+    pop		ecx
+    mov		esi, edx
 
-    add		esi, 4				; next element
+    ; Proceed to next element
+    add		esi, 4
     loop	outerLoop
 
     endDisplayLoop:
@@ -290,16 +294,19 @@ exchange PROC
     mov		ebp, esp
     pushad
 
-    mov		eax, [ebp + 16]				; address of second number
-    mov		ebx, [ebp + 12]				; address of first number
+    ; Address of second number
+    mov		eax, [ebp + 16]
+    ; Address of first number
+    mov		ebx, [ebp + 12]
     mov		edx, eax
-    sub		edx, ebx					; edx should now have the difference between the first and second number
+    ; Give edx the difference between the first and second number
+    sub		edx, ebx
 
-    ; somehow we got to switch these two up.
     mov		esi, ebx
     mov		ecx, [ebx]
     mov		eax, [eax]
-    mov		[esi], eax  ; put eax in array
+    ; Put eax in array
+    mov		[esi], eax
     add		esi, edx
     mov		[esi], ecx
 
@@ -321,8 +328,10 @@ exchange ENDP
 displayMedian PROC
     push ebp
     mov  ebp, esp
-    mov  esi, [ebp + 12]  ; @list
-    mov	 eax, [ebp + 8]   ; loop control based on request
+    mov  esi, [ebp + 12]
+    mov	 eax, [ebp + 8]
+
+    ; Loop control based on request
     mov  edx, 0
     mov	 ebx, 2
     div	 ebx
@@ -332,24 +341,25 @@ displayMedian PROC
     add		esi, 4
     loop	medianLoop
 
-    ; check for zero
+    ; Check for zero
     cmp		edx, 0
-    jnz     itsOdd
-    ; its even
-    mov		eax, [esi-4]
+    jnz     isOdd
+
+    isEven:
+    mov		eax, [esi - 4]
     add		eax, [esi]
     mov		edx, 0
     mov		ebx, 2
     div		ebx
-    mov		edx, OFFSET medianString
+    mov		edx, OFFSET medianMessage
     call	WriteString
     call	WriteDec
     call	CrLf
     jmp		endDisplayMedian
 
-    itsOdd:
+    isOdd:
     mov		eax, [esi]
-    mov		edx, OFFSET medianString
+    mov		edx, OFFSET medianMessage
     call	WriteString
     call	WriteDec
     call	CrLf
@@ -362,15 +372,15 @@ displayMedian ENDP
 
 ; ====================================================================================================================
 ;         Procedure: farewell
-;       Description: Procedure to say goodbye to the user.
-;          Receives: goodbye is global variables.
+;       Description: Prints farewell message.
+;          Receives: farewellMessage is a global variable.
 ;           Returns: nothing
-;     Preconditions: goodbye must be set to strings.
+;     Preconditions: farewellMessage must be set to string.
 ; Registers Changed: edx
 ; ====================================================================================================================
 farewell PROC
     call	CrLf
-    mov		edx, OFFSET goodbye
+    mov		edx, OFFSET farewellMessage
     call	WriteString
     call	CrLf
     call	CrLf
