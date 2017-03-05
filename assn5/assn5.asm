@@ -94,14 +94,14 @@ main PROC
     exit
 main ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; CHANGE COLOR PROCEDURE:
 ; Description :		 Procedure to change colors of console output to teal.
 ; Receives:			 val1 and val2 are pushed onto stack before called.
 ; Returns:			 nothing
 ; Preconditions:	 val1 and val2 must be set to integers between 0 and 16
 ; Registers Changed: eax, esp
-; ******************************************************************************************************
+; ====================================================================================================================
 
 changeColor PROC
 
@@ -116,14 +116,14 @@ changeColor PROC
 		ret  8	; Clean up the stack
 changeColor	ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; INTRODUCTION PROCEDURE:
 ; Description :		 Procedure to give the user instructions and an introduction to the program.
 ; Receives:			 welcome, instructions_1, and instructions_2 are global variables
 ; Returns:		     nothing
 ; Preconditions:	 welcome, instructions_1, and instructions_2 must be set to strings
 ; Registers Changed: edx,
-; ******************************************************************************************************
+; ====================================================================================================================
 introduction PROC
 	; Programmer name and title of assignment
 	call	 CrLf
@@ -141,14 +141,14 @@ introduction PROC
 	ret
 introduction ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; GETDATA PROCEDURE:
 ; Description :		 Procedure to get and validate an integer between 10 and 200 from the user.
 ; Receives:			 instructions_3 is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
 ; Returns:			 puts user's request integer into the request variable.
 ; Preconditions:	 instructions_3 must be set to strings. Request must be declared as a DWORD
 ; Registers Changed: edx, eax,
-; ******************************************************************************************************
+; ====================================================================================================================
 getData PROC
 	; loop to allow user to continue entering numbers until within range of MIN and MAX
     push ebp
@@ -187,14 +187,14 @@ getData PROC
 	ret 4
 getData ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; FILLARRAY PROCEDURE:
 ; Description :		 Fill an array with random numbers
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, esi
-; ******************************************************************************************************
+; ====================================================================================================================
 fillArray PROC
 	push ebp
 	mov  ebp, esp
@@ -215,14 +215,14 @@ fillArray PROC
 	ret  8
 fillArray ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; DISPLAYLIST PROCEDURE:
 ; Description :		 Prints out values in list MIN numbers per row
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
-; ******************************************************************************************************
+; ====================================================================================================================
 displayList PROC
 	push ebp
 	mov  ebp, esp
@@ -249,14 +249,14 @@ displayList PROC
     ret		8
 displayList ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; SORTLIST PROCEDURE:
 ; Description :		 Prints out values in list
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
-; ******************************************************************************************************
+; ====================================================================================================================
 sortList PROC
 	push ebp
 	mov  ebp, esp
@@ -297,14 +297,14 @@ sortList PROC
     ret		8
 sortList ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; exchange PROCEDURE:
 ; Description :		 Prints out values in list
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
-; ******************************************************************************************************
+; ====================================================================================================================
 exchange PROC
 	push	ebp
 	mov		ebp, esp
@@ -328,14 +328,14 @@ exchange PROC
 	ret		12
 exchange ENDP
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; DISPLAYMEDIAN PROCEDURE:
 ; Description :		 Fill an array with random numbers
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
 ; Registers Changed: eax,ebx, ecx, edx,
-; ******************************************************************************************************
+; ====================================================================================================================
 displayMedian PROC
 	push ebp
 	mov  ebp, esp
@@ -378,14 +378,14 @@ displayMedian PROC
 displayMedian ENDP
 
 
-; ******************************************************************************************************
+; ====================================================================================================================
 ; FAREWELL PROCEDURE:
 ; Description :		 Procedure to say goodbye to the user.
 ; Receives:		     goodbye is global variables.
 ; Returns:			 nothing
 ; Preconditions:	 goodbyte must be set to strings.
 ; Registers Changed: edx,
-; ******************************************************************************************************
+; ====================================================================================================================
 farewell PROC
 	; say goodbye
 	call	CrLf
