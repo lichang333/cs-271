@@ -23,13 +23,11 @@ LO				=		 100
 HI				=		 999
 MAX_SIZE		=		 200
 
-welcome					   BYTE	  "Sorting Random Integers, programmed by Alec Merdler.", 0
+welcomeMessage		       BYTE	  "Sorting Random Integers, programmed by Alec Merdler.", 0
 descriptionMessage1        BYTE   "This program generates random numbers in the range [100 .. 999],", 0
 descriptionMessage2        BYTE   "displays the original list, sorts the list, and calculates the", 0
 descriptionMessage3        BYTE   "median value.  Finally, it displays the list sorted in descending order.", 0
-instructions_1			   BYTE	  "Please enter a number between [10, 200] to see all ",0
-instructions_2			   BYTE   "of the numbers before and after they're sorted. It will display the median value and show the sorted list in descending order", 0
-instructions_3			   BYTE   "Please enter a number between 10 and 200.", 0
+inputPrompt			       BYTE	  "How many numbers should be generated? [10 .. 200]: ", 0
 belowError				   BYTE   "The number you entered was too small. ", 0
 aboveError				   BYTE   "The number you entered was too big. ", 0
 medianString			   BYTE	  "The median is: ",0
@@ -53,10 +51,6 @@ val2 DWORD 16
 ; Description: Calls other procedures to drive the program.
 ; ==============================================================================
 main PROC
-    push val1
-    push val2
-    call changeColor
-
     call introduction
 
     push OFFSET request
@@ -99,74 +93,42 @@ main PROC
     exit
 main ENDP
 
-; ====================================================================================================================
-; CHANGE COLOR PROCEDURE:
-; Description:		 Procedure to change colors of console output to teal.
-; Receives:			 val1 and val2 are pushed onto stack before called.
-; Returns:			 nothing
-; Preconditions:	 val1 and val2 must be set to integers between 0 and 16
-; Registers Changed: eax, esp
-; ====================================================================================================================
-
-changeColor PROC
-
-	; Set text color to teal
-    push ebp
-    mov	 ebp, esp
-    mov  eax, [ebp + 8] ; val 1
-    imul eax, 16
-    add  eax, [ebp + 12] ; val 2
-    call setTextColor
-    pop	 ebp
-
-    ret  8
-changeColor	ENDP
-
 
 ; ====================================================================================================================
-; INTRODUCTION PROCEDURE:
-; Description:		 Prints welcome message and prompts user for input.
-; Receives:			 welcome, instructions_1, and instructions_2 are global variables
-; Returns:		     nothing
-; Preconditions:	 welcome, instructions_1, and instructions_2 must be set to strings
-; Registers Changed: edx,
+;         Procedure: introduction
+;       Description: Prints welcome message and extra credit messages.
+;          Receives: welcomeMessage is a global variable
+;           Returns: nothing
+;     Preconditions: welcome must be set to a string
+; Registers Changed: edx
 ; ====================================================================================================================
 introduction PROC
-	; Display title of program
-	call	 CrLf
-	mov		 edx, OFFSET welcome
-	call	 WriteString
-	call	 CrLf
+    call	 CrLf
+    mov		 edx, OFFSET welcomeMessage
+    call	 WriteString
+    call	 CrLf
 
-	; Prompt user for input
-	mov		edx, OFFSET instructions_1
-	call	WriteString
-	mov		edx, OFFSET instructions_2
-	call	WriteString
-	call	CrLf
-
-	ret
+    ret
 introduction ENDP
 
 
 ; ====================================================================================================================
-; GETDATA PROCEDURE:
-; Description:		 Procedure to get and validate an integer between 10 and 200 from the user.
-; Receives:			 instructions_3 is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
-; Returns:			 puts user's request integer into the request variable.
-; Preconditions:	 instructions_3 must be set to strings. Request must be declared as a DWORD
+;         Procedure: getData
+;       Description: Get and validate an integer between 10 and 200 from the user.
+;          Receives: inputPrompt is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
+;           Returns: Puts user's request integer into the request variable.
+;     Preconditions: inputPrompt must be set to strings. Request must be declared as a DWORD
 ; Registers Changed: edx, eax,
 ; ====================================================================================================================
 getData PROC
-	; loop to allow user to continue entering numbers until within range of MIN and MAX
+    ; loop to allow user to continue entering numbers until within range of MIN and MAX
     push ebp
     mov	 ebp, esp
     mov	 ebx, [ebp + 8] ; get address of request into ebx    (lecture 18)
 
-	userNumberLoop:
-    mov		edx, OFFSET instructions_3
+    userNumberLoop:
+    mov     edx, OFFSET inputPrompt
     call	WriteString
-    call	CrLf
     call    ReadInt
     mov     [ebx], eax		; save the user's request into var request
     cmp		eax, MIN
@@ -175,42 +137,43 @@ getData PROC
     jg		errorAbove
     jmp		continue
 
-	; validation
-	errorBelow:
+    ; validation
+    errorBelow:
     mov		edx, OFFSET belowError
     call	WriteString
     call	CrLf
     jmp		userNumberLoop
 
-	errorAbove:
+    errorAbove:
     mov		edx, OFFSET aboveError
     call	WriteString
     call	CrLf
     jmp		userNumberLoop
 
-	continue:
+    continue:
         pop ebp
 
     ; clean up the stack. we only have 1 extra DWORD to get rid of.
-	ret 4
+    ret 4
 getData ENDP
 
 
 ; ====================================================================================================================
-; FILLARRAY PROCEDURE:
-; Description:		 Fill an array with random numbers
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing
-; Preconditions:	 request must be set to an integer between 10 and 200
+;         Procedure: fillArray
+;       Description: Fills an array with random numbers
+;          Receives: list: @array
+;                    request: number of array elements
+;           Returns: nothing
+;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, esi
 ; ====================================================================================================================
 fillArray PROC
-	push ebp
-	mov  ebp, esp
-	mov  esi, [ebp + 12]  ; @list
-	mov	 ecx, [ebp + 8]   ; loop control based on request
+    push ebp
+    mov  ebp, esp
+    mov  esi, [ebp + 12]  ; @list
+    mov	 ecx, [ebp + 8]   ; loop control based on request
 
-	fillArrLoop:
+    fillArrLoop:
     mov		eax, HI
     sub		eax, LO
     inc		eax
@@ -220,28 +183,30 @@ fillArray PROC
     add		esi, 4		; next element
     loop	fillArrLoop
 
-	pop  ebp
-	ret  8
+    pop  ebp
+    ret  8
 fillArray ENDP
 
 
 ; ====================================================================================================================
-; DISPLAYLIST PROCEDURE:
-; Description:		 Prints out values in list MIN numbers per row
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing
-; Preconditions:	 request must be set to an integer between 10 and 200
+;         Procedure: displayList
+;       Description: Prints out values in list MIN numbers per row
+;          Receives: list: @array
+;                    request: number of array elements
+;           Returns: nothing
+;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 displayList PROC
-	push ebp
-	mov  ebp, esp
-	mov	 ebx, 0			  ; counting to 10 for ouput
-	mov  esi, [ebp + 12]  ; @list
-	mov	 ecx, [ebp + 8]   ; loop control based on request
+    push ebp
+    mov  ebp, esp
+    mov	 ebx, 0			  ; counting to 10 for ouput
+    mov  esi, [ebp + 12]  ; @list
+    mov	 ecx, [ebp + 8]   ; loop control based on request
 
-	displayLoop:
-    mov		eax, [esi]  ; get current element
+    displayLoop:
+    ; Get current element
+    mov		eax, [esi]
     call	WriteDec
     mov		edx, OFFSET spaces
     call	WriteString
@@ -250,32 +215,34 @@ displayList PROC
     jl		skipCarry
     call	CrLf
     mov		ebx,0
+
     skipCarry:
     add		esi, 4		; next element
     loop	displayLoop
 
-	endDisplayLoop:
+    endDisplayLoop:
     pop		ebp
     ret		8
 displayList ENDP
 
 
 ; ====================================================================================================================
-; SORTLIST PROCEDURE:
-; Description:		 Prints out values in list
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing
-; Preconditions:	 request must be set to an integer between 10 and 200
+;         Procedure: sortList
+;       Description: Prints out values in list
+;          Receives: list: @array
+;                    request: number of array elements
+;           Returns: nothing
+;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 sortList PROC
-	push ebp
-	mov  ebp, esp
-	mov  esi, [ebp + 12]			; @list
-	mov	 ecx, [ebp + 8]				; loop control based on request
-	dec	 ecx
+    push ebp
+    mov  ebp, esp
+    mov  esi, [ebp + 12]			; @list
+    mov	 ecx, [ebp + 8]				; loop control based on request
+    dec	 ecx
 
-	outerLoop:
+    outerLoop:
     mov		eax, [esi]			; get current element
     mov		edx, esi
     push	ecx					; save outer loop counter
@@ -303,110 +270,112 @@ sortList PROC
     add		esi, 4				; next element
     loop	outerLoop
 
-	endDisplayLoop:
+    endDisplayLoop:
     pop		ebp
     ret		8
 sortList ENDP
 
 
 ; ====================================================================================================================
-; exchange PROCEDURE:
-; Description:		 Prints out values in list
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing
-; Preconditions:	 request must be set to an integer between 10 and 200
+;         Procedure: exchange
+;       Description: Prints out values in list
+;          Receives: list: @array
+;                    request: number of array elements
+;           Returns: nothing
+;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 exchange PROC
-	push	ebp
-	mov		ebp, esp
-	pushad
+    push	ebp
+    mov		ebp, esp
+    pushad
 
-	mov		eax, [ebp + 16]				; address of second number
-	mov		ebx, [ebp + 12]				; address of first number
-	mov		edx, eax
-	sub		edx, ebx					; edx should now have the difference between the first and second number
+    mov		eax, [ebp + 16]				; address of second number
+    mov		ebx, [ebp + 12]				; address of first number
+    mov		edx, eax
+    sub		edx, ebx					; edx should now have the difference between the first and second number
 
-	; somehow we got to switch these two up.
-	mov		esi, ebx
-	mov		ecx, [ebx]
-	mov		eax, [eax]
-	mov		[esi], eax  ; put eax in array
-	add		esi, edx
-	mov		[esi], ecx
+    ; somehow we got to switch these two up.
+    mov		esi, ebx
+    mov		ecx, [ebx]
+    mov		eax, [eax]
+    mov		[esi], eax  ; put eax in array
+    add		esi, edx
+    mov		[esi], ecx
 
-	popad
-	pop		ebp
-	ret		12
+    popad
+    pop		ebp
+    ret		12
 exchange ENDP
 
 
 ; ====================================================================================================================
-; DISPLAYMEDIAN PROCEDURE:
-; Description:		 Fill an array with random numbers
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing
-; Preconditions:	 request must be set to an integer between 10 and 200
+;         Procedure: displayMedian
+;       Description: Fill an array with random numbers
+;          Receives: list: @array
+;                    request: number of array elements
+;           Returns: nothing
+;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax,ebx, ecx, edx,
 ; ====================================================================================================================
 displayMedian PROC
-	push ebp
-	mov  ebp, esp
-	mov  esi, [ebp + 12]  ; @list
-	mov	 eax, [ebp + 8]   ; loop control based on request
-	mov  edx, 0
-	mov	 ebx, 2
-	div	 ebx
-	mov	 ecx, eax
+    push ebp
+    mov  ebp, esp
+    mov  esi, [ebp + 12]  ; @list
+    mov	 eax, [ebp + 8]   ; loop control based on request
+    mov  edx, 0
+    mov	 ebx, 2
+    div	 ebx
+    mov	 ecx, eax
 
-	medianLoop:
+    medianLoop:
     add		esi, 4
     loop	medianLoop
 
-	; check for zero
-	cmp		edx, 0
-	jnz     itsOdd
-	; its even
-	mov		eax, [esi-4]
-	add		eax, [esi]
-	mov		edx, 0
-	mov		ebx, 2
-	div		ebx
-	mov		edx, OFFSET medianString
-	call	WriteString
-	call	WriteDec
-	call	CrLf
-	jmp		endDisplayMedian
+    ; check for zero
+    cmp		edx, 0
+    jnz     itsOdd
+    ; its even
+    mov		eax, [esi-4]
+    add		eax, [esi]
+    mov		edx, 0
+    mov		ebx, 2
+    div		ebx
+    mov		edx, OFFSET medianString
+    call	WriteString
+    call	WriteDec
+    call	CrLf
+    jmp		endDisplayMedian
 
-	itsOdd:
-	mov		eax, [esi]
-	mov		edx, OFFSET medianString
-	call	WriteString
-	call	WriteDec
-	call	CrLf
+    itsOdd:
+    mov		eax, [esi]
+    mov		edx, OFFSET medianString
+    call	WriteString
+    call	WriteDec
+    call	CrLf
 
-	endDisplayMedian:
-	pop  ebp
-	ret  8
+    endDisplayMedian:
+    pop  ebp
+    ret  8
 displayMedian ENDP
 
 
 ; ====================================================================================================================
-; FAREWELL PROCEDURE:
-; Description:		 Procedure to say goodbye to the user.
-; Receives:		     goodbye is global variables.
-; Returns:			 nothing
-; Preconditions:	 goodbyte must be set to strings.
-; Registers Changed: edx,
+;         Procedure: farewell
+;       Description: Procedure to say goodbye to the user.
+;          Receives: goodbye is global variables.
+;           Returns: nothing
+;     Preconditions: goodbye must be set to strings.
+; Registers Changed: edx
 ; ====================================================================================================================
 farewell PROC
-	call	CrLf
-	mov		edx, OFFSET goodbye
-	call	WriteString
-	call	CrLf
-	call	CrLf
+    call	CrLf
+    mov		edx, OFFSET goodbye
+    call	WriteString
+    call	CrLf
+    call	CrLf
 
-	exit
+    exit
 farewell ENDP
 
 END main
