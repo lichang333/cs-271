@@ -23,6 +23,7 @@ currentValue               DWORD  ?
 isCompositeFlag            DWORD  0
 currentRow                 DWORD  0
 currentPage                DWORD  0
+ec1Message                 BYTE   "**EC: Align the output columns.", 0
 ec2Message                 BYTE   "**EC: Display more composites, but show them one page at a time.", 0
 
 LOWER_LIMIT    = 1
@@ -52,6 +53,9 @@ main ENDP
 introduction PROC
     call    CrLf
     mov	    edx, OFFSET welcomeMessage
+    call    WriteString
+    call    CrLf
+    mov     edx, OFFSET ec1Message
     call    WriteString
     call    CrLf
     mov     edx, OFFSET ec2Message
