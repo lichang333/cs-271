@@ -1,5 +1,6 @@
 TITLE Programming Assignment #5 (assn5.asm)
 
+; ====================================================================================================================
 ; Author: Alec Merdler
 ; Description:
 ;   Write and test a MASM program to perform the following tasks:
@@ -9,12 +10,23 @@ TITLE Programming Assignment #5 (assn5.asm)
 ;      of an array.
 ;   4. Display the list of integers before sorting, 10 numbers per line.
 ;   5. Sort the list in descending order (i.e., largest first).
-;   6. Calculate and display the median value, rounded to the nearest integer. 7. Display the sorted list, 10 numbers per line.
+;   6. Calculate and display the median value, rounded to the nearest integer.
+;   7. Display the sorted list, 10 numbers per line.
+; ====================================================================================================================
 
 INCLUDE Irvine32.inc
 
 .data
-welcome					   BYTE	  "Welcome to Sorting Random Integers by Alec Merdler.", 0
+MIN				=		 10
+MAX				=		 200
+LO				=		 100
+HI				=		 999
+MAX_SIZE		=		 200
+
+welcome					   BYTE	  "Sorting Random Integers, programmed by Alec Merdler.", 0
+descriptionMessage1        BYTE   "This program generates random numbers in the range [100 .. 999],", 0
+descriptionMessage2        BYTE   "displays the original list, sorts the list, and calculates the", 0
+descriptionMessage3        BYTE   "median value.  Finally, it displays the list sorted in descending order.", 0
 instructions_1			   BYTE	  "Please enter a number between [10, 200] to see all ",0
 instructions_2			   BYTE   "of the numbers before and after they're sorted. It will display the median value and show the sorted list in descending order", 0
 instructions_3			   BYTE   "Please enter a number between 10 and 200.", 0
@@ -28,17 +40,9 @@ afterSort				   BYTE	  "The array after sorting: ", 0
 number					   DWORD  ?
 request					   DWORD  ?
 requestTemp			       DWORD  ?
+list					   DWORD MAX_SIZE DUP(?)
 
-MIN				=		 10
-MAX				=		 200
-LO				=		 100
-HI				=		 999
-MAX_SIZE		=		 200
-
-;Array
-list					   DWORD MAX_SIZE DUP(?)  ; Code from Lecture 18/19/20
-
-;change text color
+; change text color
 val1 DWORD 11
 val2 DWORD 16
 
@@ -58,7 +62,8 @@ main PROC
     push OFFSET request
     call getData
 
-    call Randomize			; seed for generating random numbers
+    ; Seed for generating random numbers
+    call Randomize
 
     push OFFSET list
     push request
@@ -96,7 +101,7 @@ main ENDP
 
 ; ====================================================================================================================
 ; CHANGE COLOR PROCEDURE:
-; Description :		 Procedure to change colors of console output to teal.
+; Description:		 Procedure to change colors of console output to teal.
 ; Receives:			 val1 and val2 are pushed onto stack before called.
 ; Returns:			 nothing
 ; Preconditions:	 val1 and val2 must be set to integers between 0 and 16
@@ -106,32 +111,34 @@ main ENDP
 changeColor PROC
 
 	; Set text color to teal
-		push ebp
-		mov	 ebp, esp
-		mov  eax, [ebp + 8] ; val 1
-		imul eax, 16
-		add  eax, [ebp + 12] ; val 2
-		call setTextColor
-		pop	 ebp
-		ret  8	; Clean up the stack
+    push ebp
+    mov	 ebp, esp
+    mov  eax, [ebp + 8] ; val 1
+    imul eax, 16
+    add  eax, [ebp + 12] ; val 2
+    call setTextColor
+    pop	 ebp
+
+    ret  8
 changeColor	ENDP
+
 
 ; ====================================================================================================================
 ; INTRODUCTION PROCEDURE:
-; Description :		 Procedure to give the user instructions and an introduction to the program.
+; Description:		 Prints welcome message and prompts user for input.
 ; Receives:			 welcome, instructions_1, and instructions_2 are global variables
 ; Returns:		     nothing
 ; Preconditions:	 welcome, instructions_1, and instructions_2 must be set to strings
 ; Registers Changed: edx,
 ; ====================================================================================================================
 introduction PROC
-	; Programmer name and title of assignment
+	; Display title of program
 	call	 CrLf
 	mov		 edx, OFFSET welcome
 	call	 WriteString
 	call	 CrLf
 
-	; assignment instructions
+	; Prompt user for input
 	mov		edx, OFFSET instructions_1
 	call	WriteString
 	mov		edx, OFFSET instructions_2
@@ -141,9 +148,10 @@ introduction PROC
 	ret
 introduction ENDP
 
+
 ; ====================================================================================================================
 ; GETDATA PROCEDURE:
-; Description :		 Procedure to get and validate an integer between 10 and 200 from the user.
+; Description:		 Procedure to get and validate an integer between 10 and 200 from the user.
 ; Receives:			 instructions_3 is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
 ; Returns:			 puts user's request integer into the request variable.
 ; Preconditions:	 instructions_3 must be set to strings. Request must be declared as a DWORD
@@ -187,9 +195,10 @@ getData PROC
 	ret 4
 getData ENDP
 
+
 ; ====================================================================================================================
 ; FILLARRAY PROCEDURE:
-; Description :		 Fill an array with random numbers
+; Description:		 Fill an array with random numbers
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
@@ -215,9 +224,10 @@ fillArray PROC
 	ret  8
 fillArray ENDP
 
+
 ; ====================================================================================================================
 ; DISPLAYLIST PROCEDURE:
-; Description :		 Prints out values in list MIN numbers per row
+; Description:		 Prints out values in list MIN numbers per row
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
@@ -249,9 +259,10 @@ displayList PROC
     ret		8
 displayList ENDP
 
+
 ; ====================================================================================================================
 ; SORTLIST PROCEDURE:
-; Description :		 Prints out values in list
+; Description:		 Prints out values in list
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
@@ -297,9 +308,10 @@ sortList PROC
     ret		8
 sortList ENDP
 
+
 ; ====================================================================================================================
 ; exchange PROCEDURE:
-; Description :		 Prints out values in list
+; Description:		 Prints out values in list
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
@@ -328,9 +340,10 @@ exchange PROC
 	ret		12
 exchange ENDP
 
+
 ; ====================================================================================================================
 ; DISPLAYMEDIAN PROCEDURE:
-; Description :		 Fill an array with random numbers
+; Description:		 Fill an array with random numbers
 ; Receives:			 list: @array and request: number of array elements
 ; Returns:			 nothing
 ; Preconditions:	 request must be set to an integer between 10 and 200
@@ -380,19 +393,20 @@ displayMedian ENDP
 
 ; ====================================================================================================================
 ; FAREWELL PROCEDURE:
-; Description :		 Procedure to say goodbye to the user.
+; Description:		 Procedure to say goodbye to the user.
 ; Receives:		     goodbye is global variables.
 ; Returns:			 nothing
 ; Preconditions:	 goodbyte must be set to strings.
 ; Registers Changed: edx,
 ; ====================================================================================================================
 farewell PROC
-	; say goodbye
 	call	CrLf
 	mov		edx, OFFSET goodbye
 	call	WriteString
 	call	CrLf
 	call	CrLf
+
 	exit
 farewell ENDP
+
 END main
