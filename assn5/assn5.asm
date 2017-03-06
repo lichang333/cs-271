@@ -165,7 +165,7 @@ getData ENDP
 
 ; ====================================================================================================================
 ;         Procedure: fillArray
-;       Description: Fills an array with random numbers
+;       Description: Fills a given array with random numbers.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
@@ -178,7 +178,7 @@ fillArray PROC
     mov  esi, [ebp + 12]
     mov	 ecx, [ebp + 8]
 
-    fillArrLoop:
+    addElement:
     mov		eax, HI
     sub		eax, LO
     inc		eax
@@ -189,7 +189,7 @@ fillArray PROC
 
     ; Proceed to next element
     add		esi, 4
-    loop	fillArrLoop
+    loop	addElement
 
     pop  ebp
     ret  8
@@ -212,7 +212,7 @@ displayList PROC
     mov  esi, [ebp + 12]
     mov	 ecx, [ebp + 8]
 
-    displayLoop:
+    displayElement:
     ; Get current element
     mov		eax, [esi]
     call	WriteDec
@@ -227,9 +227,8 @@ displayList PROC
     ; Proceed to next element
     skipCarry:
     add		esi, 4
-    loop	displayLoop
+    loop	displayElement
 
-    endDisplayLoop:
     pop		ebp
     ret		8
 displayList ENDP
@@ -270,7 +269,7 @@ sortList PROC
     sub		esi, 4
 
     skipSwitch:
-    add		esi,4
+    add		esi, 4
 
     loop	innerLoop
 
@@ -283,7 +282,6 @@ sortList PROC
     add		esi, 4
     loop	outerLoop
 
-    endDisplayLoop:
     pop		ebp
     ret		8
 sortList ENDP
