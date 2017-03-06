@@ -28,8 +28,8 @@ descriptionMessage1        BYTE   "This program generates random numbers in the 
 descriptionMessage2        BYTE   "displays the original list, sorts the list, and calculates the", 0
 descriptionMessage3        BYTE   "median value.  Finally, it displays the list sorted in descending order.", 0
 inputPrompt			       BYTE	  "How many numbers should be generated? [10 .. 200]: ", 0
-invalidLowMessage		   BYTE   "The number you entered was too small. ", 0
-invalidHighMessage		   BYTE   "The number you entered was too big. ", 0
+invalidLowMessage		   BYTE   "Invalid input (less than 10). ", 0
+invalidHighMessage		   BYTE   "Invalid input (greater than 200). ", 0
 medianMessage			   BYTE	  "The median is: ",0
 spaces					   BYTE	  "   ", 0
 farewellMessage			   BYTE	  "Farewell!", 0
@@ -47,18 +47,19 @@ list					   DWORD MAX_SIZE DUP(?)
 ;       Description: Calls other procedures to drive the program.
 ;          Receives: none
 ;           Returns: none
-;     Preconditions: none
 ; Registers Changed: edx
 ; ==============================================================================
 main PROC
     call introduction
 
+    ; Get user input
     push OFFSET request
     call getData
 
     ; Seed for generating random numbers
     call Randomize
 
+    ; Fill array with random numbers
     push OFFSET list
     push request
     call fillArray
@@ -101,15 +102,23 @@ main ENDP
 
 ; ====================================================================================================================
 ;         Procedure: introduction
-;       Description: Prints welcome message and extra credit messages.
-;          Receives: welcomeMessage is a global variable
+;       Description: Prints welcome message, instructions, and extra credit messages.
+;          Receives: none
 ;           Returns: none
-;     Preconditions: welcome must be set to a string
 ; Registers Changed: edx
 ; ====================================================================================================================
 introduction PROC
     call	 CrLf
     mov		 edx, OFFSET welcomeMessage
+    call	 WriteString
+    call	 CrLf
+    mov		 edx, OFFSET descriptionMessage1
+    call	 WriteString
+    call	 CrLf
+    mov		 edx, OFFSET descriptionMessage2
+    call	 WriteString
+    call	 CrLf
+    mov		 edx, OFFSET descriptionMessage3
     call	 WriteString
     call	 CrLf
 
@@ -120,9 +129,8 @@ introduction ENDP
 ; ====================================================================================================================
 ;         Procedure: getData
 ;       Description: Prompts the user for input data.
-;          Receives: inputPrompt is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
+;          Receives: Receives OFFSET of request variable.
 ;           Returns: Puts user's request integer into the request variable.
-;     Preconditions: inputPrompt must be set to strings. Request must be declared as a DWORD
 ; Registers Changed: edx, eax,
 ; ====================================================================================================================
 getData PROC
@@ -169,7 +177,6 @@ getData ENDP
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
-;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, esi
 ; ====================================================================================================================
 fillArray PROC
@@ -198,11 +205,10 @@ fillArray ENDP
 
 ; ====================================================================================================================
 ;         Procedure: displayList
-;       Description: Prints out values in list MIN numbers per row
+;       Description: Prints out values in given array.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
-;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 displayList PROC
@@ -240,7 +246,6 @@ displayList ENDP
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
-;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 sortList PROC
@@ -293,7 +298,6 @@ sortList ENDP
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
-;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
 exchange PROC
@@ -329,7 +333,6 @@ exchange ENDP
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
-;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax,ebx, ecx, edx,
 ; ====================================================================================================================
 displayMedian PROC
@@ -380,9 +383,8 @@ displayMedian ENDP
 ; ====================================================================================================================
 ;         Procedure: farewell
 ;       Description: Prints farewell message.
-;          Receives: farewellMessage is a global variable.
+;          Receives: none
 ;           Returns: none
-;     Preconditions: farewellMessage must be set to string.
 ; Registers Changed: edx
 ; ====================================================================================================================
 farewell PROC
