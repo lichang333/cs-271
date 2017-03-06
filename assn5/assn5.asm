@@ -43,8 +43,12 @@ list					   DWORD MAX_SIZE DUP(?)
 
 .code
 ; ==============================================================================
-;   Procedure: main
-; Description: Calls other procedures to drive the program.
+;         Procedure: main
+;       Description: Calls other procedures to drive the program.
+;          Receives: none
+;           Returns: none
+;     Preconditions: none
+; Registers Changed: edx
 ; ==============================================================================
 main PROC
     call introduction
@@ -59,24 +63,28 @@ main PROC
     push request
     call fillArray
 
+    ; Display list before sorting
     mov  edx, OFFSET preSortMessage
     call WriteString
+    call CrLf
     call CrLf
     push OFFSET list
     push request
     call displayList
 
+    ; Sort list
     push OFFSET list
     push request
     call sortList
-
     call CrLf
+
+    ; Display median
     push OFFSET list
     push request
     call displayMedian
-
-
     call CrLf
+
+    ; Display list after sorting
     mov  edx, OFFSET postSortMessage
     call WriteString
     call CrLf
@@ -84,6 +92,7 @@ main PROC
     push request
     call displayList
 
+    ; Display farewell message
     call farewell
 
     exit
@@ -94,7 +103,7 @@ main ENDP
 ;         Procedure: introduction
 ;       Description: Prints welcome message and extra credit messages.
 ;          Receives: welcomeMessage is a global variable
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: welcome must be set to a string
 ; Registers Changed: edx
 ; ====================================================================================================================
@@ -110,7 +119,7 @@ introduction ENDP
 
 ; ====================================================================================================================
 ;         Procedure: getData
-;       Description: Get and validate an integer between 10 and 200 from the user.
+;       Description: Prompt user for input data.
 ;          Receives: inputPrompt is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
 ;           Returns: Puts user's request integer into the request variable.
 ;     Preconditions: inputPrompt must be set to strings. Request must be declared as a DWORD
@@ -159,7 +168,7 @@ getData ENDP
 ;       Description: Fills an array with random numbers
 ;          Receives: list: @array
 ;                    request: number of array elements
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, esi
 ; ====================================================================================================================
@@ -192,7 +201,7 @@ fillArray ENDP
 ;       Description: Prints out values in list MIN numbers per row
 ;          Receives: list: @array
 ;                    request: number of array elements
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
@@ -231,7 +240,7 @@ displayList ENDP
 ;       Description: Prints out values in list
 ;          Receives: list: @array
 ;                    request: number of array elements
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
@@ -285,7 +294,7 @@ sortList ENDP
 ;       Description: Prints out values in list
 ;          Receives: list: @array
 ;                    request: number of array elements
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax, ecx, ebx, edx
 ; ====================================================================================================================
@@ -321,7 +330,7 @@ exchange ENDP
 ;       Description: Fill an array with random numbers
 ;          Receives: list: @array
 ;                    request: number of array elements
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: request must be set to an integer between 10 and 200
 ; Registers Changed: eax,ebx, ecx, edx,
 ; ====================================================================================================================
@@ -374,7 +383,7 @@ displayMedian ENDP
 ;         Procedure: farewell
 ;       Description: Prints farewell message.
 ;          Receives: farewellMessage is a global variable.
-;           Returns: nothing
+;           Returns: none
 ;     Preconditions: farewellMessage must be set to string.
 ; Registers Changed: edx
 ; ====================================================================================================================
