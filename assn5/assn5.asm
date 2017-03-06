@@ -215,21 +215,22 @@ fillArray ENDP
 displayList PROC
     push ebp
     mov  ebp, esp
-    mov	 ebx, 0
     mov  esi, [ebp + 12]
     mov	 ecx, [ebp + 8]
+    ; ebx tracks the number of elements per line
+    mov	 ebx, 0
 
     displayElement:
-    ; Get current element
     mov		eax, [esi]
     call	WriteDec
     mov		edx, OFFSET spaces
     call	WriteString
     inc		ebx
+    ; Check if maximun number of elements per line has been reached
     cmp		ebx, MIN
     jl		skipCarry
     call	CrLf
-    mov		ebx,0
+    mov		ebx, 0
 
     ; Proceed to next element
     skipCarry:
