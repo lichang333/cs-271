@@ -119,7 +119,7 @@ introduction ENDP
 
 ; ====================================================================================================================
 ;         Procedure: getData
-;       Description: Prompt user for input data.
+;       Description: Prompts the user for input data.
 ;          Receives: inputPrompt is global variable. Receives OFFSET of request variable. MAX and MIN global constants.
 ;           Returns: Puts user's request integer into the request variable.
 ;     Preconditions: inputPrompt must be set to strings. Request must be declared as a DWORD
@@ -236,7 +236,7 @@ displayList ENDP
 
 ; ====================================================================================================================
 ;         Procedure: sortList
-;       Description: Prints out values in list
+;       Description: Prints out values in a given array.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
@@ -289,7 +289,7 @@ sortList ENDP
 
 ; ====================================================================================================================
 ;         Procedure: exchange
-;       Description: Prints out values in list
+;       Description: Exchanges the positions of two elements in an array given their addresses.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
@@ -301,12 +301,12 @@ exchange PROC
     mov		ebp, esp
     pushad
 
-    ; Address of second number
+    ; Address of second element
     mov		eax, [ebp + 16]
-    ; Address of first number
+    ; Address of first element
     mov		ebx, [ebp + 12]
+    ; Give edx the difference between the first and second elements
     mov		edx, eax
-    ; Give edx the difference between the first and second number
     sub		edx, ebx
 
     mov		esi, ebx
@@ -325,7 +325,7 @@ exchange ENDP
 
 ; ====================================================================================================================
 ;         Procedure: displayMedian
-;       Description: Fill an array with random numbers
+;       Description: Calculates and displays the median of a given array.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
