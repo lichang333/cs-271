@@ -121,6 +121,7 @@ introduction PROC
     mov		 edx, OFFSET descriptionMessage3
     call	 WriteString
     call	 CrLf
+    call	 CrLf
 
     ret
 introduction ENDP
@@ -242,7 +243,7 @@ displayList ENDP
 
 ; ====================================================================================================================
 ;         Procedure: sortList
-;       Description: Prints out values in a given array.
+;       Description: Performs in-place sorting of the given array in descending order.
 ;          Receives: list: @array
 ;                    request: number of array elements
 ;           Returns: none
@@ -265,7 +266,9 @@ sortList PROC
     mov		ebx, [esi + 4]
     mov		eax, [edx]
     cmp		eax, ebx
+    ; Do not exchange elements if already sorted
     jge		skipSwitch
+    ; Push addresses of elements to be switched and call exchange procedure
     add		esi, 4
     push	esi
     push	edx
@@ -275,11 +278,9 @@ sortList PROC
 
     skipSwitch:
     add		esi, 4
-
     loop	innerLoop
 
     ; Restore outer loop counter and reset esi
-    skippit:
     pop		ecx
     mov		esi, edx
 
