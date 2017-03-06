@@ -33,8 +33,8 @@ invalidHighMessage		   BYTE   "Invalid input (greater than 200). ", 0
 medianMessage			   BYTE	  "The median is: ",0
 spaces					   BYTE	  "   ", 0
 farewellMessage			   BYTE	  "Farewell!", 0
-preSortMessage		       BYTE	  "The array before sorting: ", 0
-postSortMessage			   BYTE	  "The array after sorting: ", 0
+preSortMessage		       BYTE	  "The unsorted random numbers: ", 0
+postSortMessage			   BYTE	  "The sorted list: ", 0
 number					   DWORD  ?
 request					   DWORD  ?
 requestTemp			       DWORD  ?
