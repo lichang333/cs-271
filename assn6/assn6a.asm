@@ -185,9 +185,9 @@ readVal PROC
 
     ; Perform error checking
     cmp		eax, LO
-    jb		errMessage
+    jb		inputError
     cmp		eax, HI
-    ja		errMessage
+    ja		inputError
 
     sub		eax, LO
     push	eax
@@ -199,7 +199,6 @@ readVal PROC
     add		ebx, eax
     mov		eax, ebx
 
-    continn:
     mov		eax, 00000000
     loop	convertToInt
 
@@ -213,7 +212,7 @@ readVal PROC
     loop	getInput
     jmp		readValEnd
 
-    errMessage:
+    inputError:
     pop		ecx
     mov		edx, OFFSET  errorMessage
     call	WriteString
@@ -252,16 +251,19 @@ writeVal PROC
     xor		bx, bx
 
     divide:
-    xor		edx, edx				  ; high part = 0
-    div		ecx						  ; eax = quotient, edx = remainder
-    push	dx						  ; DL should be between 0 and 9
-    inc		bx						  ; count number of digits
-    test	eax, eax				  ; check if EAX zero.
-    jnz		divide					  ; no, continue
+    ; high part = 0
+    xor		edx, edx
+    div		ecx
+    ; DL should be between 0 and 9
+    push	dx
+    ; count number of digits
+    inc		bx
+    ; Check if eax is zero
+    test	eax, eax
+    jnz		divide
 
-                                      ; Reversed order POP!
-    mov		cx, bx					  ; number of digits
-    lea		esi, strResult			  ; string buffer
+    mov		cx, bx
+    lea		esi, strResult
     ; Print each input number by converting to ASCII, then calling macro
     nextDigit:
     pop		ax
@@ -270,8 +272,10 @@ writeVal PROC
 
     displayString OFFSET strResult
 
+    ; Proceed to next digit
     loop	nextDigit
 
+    ; Print space between elements
     pop		ecx
     mov		edx, OFFSET spacingMessage
     call	WriteString
