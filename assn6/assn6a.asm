@@ -169,9 +169,12 @@ readVal PROC
     mov        ecx, 10
     mov        edi, [ebp + 16]
 
-    ; Call macro to receive user input as a string
+    ; Increment current index and call macro to receive user input as a string
     getInput:
-    getString inputPrompt, request, requestCount, currentNumber
+    mov        eax, currentNumber
+    inc        eax
+    mov        currentNumber, eax
+    getString  inputPrompt, request, requestCount, currentNumber
 
     ; Get parameters from the stack
     push       ecx
