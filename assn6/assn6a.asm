@@ -23,22 +23,22 @@ LO       = 30h
 HI       = 39h
 MAX_SIZE = 10
 
-welcomeMessage         BYTE      "Designing low-level I/O procedures programmed by Alec Merdler.", 0
-descriptionMessage1  BYTE      "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
+welcomeMessage       BYTE     "Designing low-level I/O procedures programmed by Alec Merdler.", 0
+descriptionMessage1  BYTE     "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
 descriptionMessage2  BYTE     "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
 inputPrompt          BYTE     ". Please enter an unsigned integer: ", 0
-errorMessage         BYTE      "ERROR: You did not enter an unsigned number or your number was too big.", 0
-spacingMessage       BYTE      ", ", 0
-farewellMessage      BYTE      "Thanks for playing!", 0
+errorMessage         BYTE     "ERROR: You did not enter an unsigned number or your number was too big.", 0
+spacingMessage       BYTE     ", ", 0
+farewellMessage      BYTE     "Thanks for playing!", 0
 inputMessage         BYTE     "You entered the following numbers: ", 0
 sumMessage           BYTE     "The sum of these numbers is: ", 0
-averageMessage       BYTE      "The average is: ",0
+averageMessage       BYTE     "The average is: ",0
 request              DWORD    10 DUP(0)
 requestCount         DWORD    ?
 list                 DWORD    MAX_SIZE DUP(?)
 strResult            db       16 dup (0)
 
-currentNumber        DWORD 1
+currentNumber        DWORD    1
 
 
 ; ====================================================================================================================
@@ -51,23 +51,23 @@ currentNumber        DWORD 1
 ; Registers Changed: edx
 ; ====================================================================================================================
 getString MACRO    instruction, request, requestCount
-    push    edx
-    push    ecx
-    push    eax
-    push    ebx
+    push       edx
+    push       ecx
+    push       eax
+    push       ebx
 
-    mov     eax, currentNumber
-    call    WriteDec
+    mov        eax, currentNumber
+    call       WriteDec
 
     mov        edx, OFFSET inputPrompt
-    call    WriteString
+    call       WriteString
     mov        edx, OFFSET request
     mov        ecx, SIZEOF    request
-    call    ReadString
+    call       ReadString
     mov        requestCount, 00000000h
     mov        requestCount, eax
 
-    pop     ebx
+    pop        ebx
     pop        eax
     pop        ecx
     pop        edx
@@ -83,9 +83,9 @@ ENDM
 ; Registers Changed: edx
 ; ====================================================================================================================
 displayString MACRO message
-    push    edx
+    push       edx
     mov        edx, message
-    call    WriteString
+    call       WriteString
     pop        edx
 
 ENDM
@@ -99,32 +99,32 @@ ENDM
 ; Registers Changed: edx
 ; ====================================================================================================================
  main PROC
-    call    introduction
+    call       introduction
 
-    push    OFFSET list
-    push    OFFSET request
-    push    OFFSET requestCount
-    call    readVal
-    call    CrLf
+    push       OFFSET list
+    push       OFFSET request
+    push       OFFSET requestCount
+    call       readVal
+    call       CrLf
 
-    push    OFFSET averageMessage
-    push    OFFSET sumMessage
-    push    OFFSET list
-    call    displayAve
-    call    CrLf
+    push       OFFSET averageMessage
+    push       OFFSET sumMessage
+    push       OFFSET list
+    call       displayAve
+    call       CrLf
 
-    push    edx
+    push       edx
     mov        edx, OFFSET inputMessage
-    call    WriteString
+    call       WriteString
     pop        edx
 
-    push    OFFSET strResult
-    push    OFFSET list
-    call    writeVal
-    call    CrLf
+    push       OFFSET strResult
+    push       OFFSET list
+    call       writeVal
+    call       CrLf
 
-    push    OFFSET farewellMessage
-    call    farewell
+    push       OFFSET farewellMessage
+    call       farewell
 
     exit
 main ENDP
@@ -138,17 +138,17 @@ main ENDP
 ; Registers Changed: none
 ; ====================================================================================================================
 introduction PROC
-    call     CrLf
-    mov         edx, OFFSET welcomeMessage
-    call     WriteString
-    call     CrLf
-    call     CrLf
+    call       CrLf
+    mov        edx, OFFSET welcomeMessage
+    call       WriteString
+    call       CrLf
+    call       CrLf
 
     mov        edx, OFFSET descriptionMessage1
-    call    WriteString
+    call       WriteString
     mov        edx, OFFSET descriptionMessage2
-    call    WriteString
-    call    CrLf
+    call       WriteString
+    call       CrLf
 
     ret
 introduction ENDP
