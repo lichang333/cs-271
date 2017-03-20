@@ -57,7 +57,7 @@ getString MACRO instruction, request, requestCount, currentIndex
     push       eax
     push       ebx
 
-    mov        eax, currentNumber
+    mov        eax, currentIndex
     call       WriteDec
 
     mov        edx, OFFSET inputPrompt
@@ -171,7 +171,7 @@ readVal PROC
 
     ; Call macro to receive user input as a string
     getInput:
-    getString inputPrompt, request, requestCount
+    getString inputPrompt, request, requestCount, currentNumber
 
     ; Get parameters from the stack
     push       ecx
