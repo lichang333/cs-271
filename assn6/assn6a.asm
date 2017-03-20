@@ -240,7 +240,7 @@ writeVal PROC
     ; Get parameters from the stack
     push	ebp
     mov		ebp, esp
-    ; Parameter holding list of inputted numbers
+    ; Parameter holding list of input numbers
     mov		edi, [ebp + 8]
     mov		ecx, 10
 
@@ -262,11 +262,11 @@ writeVal PROC
                                       ; Reversed order POP!
     mov		cx, bx					  ; number of digits
     lea		esi, strResult			  ; string buffer
-    ; Print each input number by calling macro
+    ; Print each input number by converting to ASCII, then calling macro
     nextDigit:
     pop		ax
-    add		ax, '0'					  ; convert each number to ASCII
-    mov		[esi], ax				  ; then write to strResult
+    add		ax, '0'
+    mov		[esi], ax
 
     displayString OFFSET strResult
 
@@ -294,10 +294,12 @@ writeVal ENDP
 ; Registers Changed: eax, ebx, ecx, edx
 ; ====================================================================================================================
 displayAve PROC
+    ; Get parameters from stack
     push ebp
     mov  ebp, esp
-    mov  esi, [ebp + 8]  ; @list
-    mov	 eax, 10 ; loop control
+    ; Parameter holding list of input numbers
+    mov  esi, [ebp + 8]
+    mov	 eax, 10
     mov  edx, 0
     mov	 ebx, 0
     mov	 ecx, eax
@@ -311,14 +313,14 @@ displayAve PROC
     endMedianLoop:
     mov		edx, 0
     mov		eax, ebx
-    mov		edx, [ebp+12]
+    mov		edx, [ebp + 12]
     call	WriteString
     call	WriteDec
     call	CrLf
     mov		edx, 0
     mov		ebx, 10
     div		ebx
-    mov		edx, [ebp+16]
+    mov		edx, [ebp + 16]
     call	WriteString
     call	WriteDec
     call	CrLf
