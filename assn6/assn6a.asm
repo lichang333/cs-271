@@ -18,7 +18,7 @@ TITLE Programming Assignment #6 Low Level I/O (assn6a.asm)
 INCLUDE Irvine32.inc
 
 .data
-welcome					   BYTE	  "Welcome to Low Level I/O programmed by Alec Merdler.", 0
+welcome					   BYTE	  "PROGRAMMING ASSIGNMENT 6: Designing low-level I/O procedures programmed by Alec Merdler.", 0
 instructions_1			   BYTE	  "Please enter 10 unsigned decimal integers.",0
 instructions_2			   BYTE   "Each number must fit inside a 32 bit register. After you've finished, I'll display the list of integers, their sum and their average.", 0
 instructions_3			   BYTE   "Please enter an unsigned integer: ", 0
@@ -43,12 +43,14 @@ list					   DWORD MAX_SIZE DUP(?)  ; Code from Lecture 18/19/20
 strResult				   db 16 dup (0)		  ; string buffer to store decimal to hex (magic)
 
 
-;change text color
-val1 DWORD 11
-val2 DWORD 16
-
+; ==============================================================================
+;             Macro: getString
+;       Description: Prompt the user for input and store input as string.
+;          Receives: none
+;           Returns: none
+; Registers Changed: edx
+; ==============================================================================
 getString MACRO	instruction, request, requestCount
-	;get string macro
 	push	edx
 	push	ecx
 	push	eax
@@ -70,8 +72,14 @@ getString MACRO	instruction, request, requestCount
 ENDM
 
 
+; ==============================================================================
+;             Macro: displayString
+;       Description: Calls other procedures to drive the program.
+;          Receives: none
+;           Returns: none
+; Registers Changed: edx
+; ==============================================================================
 displayString MACRO  strResult
-
 	push	edx
 	mov		edx, strResult
 	call	WriteString
@@ -80,12 +88,14 @@ displayString MACRO  strResult
 ENDM
 
 .code
+; ==============================================================================
+;         Procedure: main
+;       Description: Calls other procedures to drive the program.
+;          Receives: none
+;           Returns: none
+; Registers Changed: edx
+; ==============================================================================
  main PROC
-
-	push	val1
-	push	val2
-	call	changeColor
-
 	call	introduction
 
 	push	OFFSET list
@@ -119,30 +129,6 @@ ENDM
 	exit
 main ENDP
 
-; ******************************************************************************************************
-; CHANGE COLOR PROCEDURE:
-; Description :		 Procedure to change colors of console output to teal.
-; Receives:			 val1 and val2 are pushed onto stack before called.
-; Returns:			 nothing
-; Preconditions:	 val1 and val2 must be set to integers between 0 and 16
-; Registers Changed: eax, esp
-; ******************************************************************************************************
-
-changeColor PROC
-
-	; Set text color to teal
-	push	ebp
-	mov		ebp, esp
-
-	mov		eax, [ebp + 8] ; val 1
-	imul	eax, 16
-	add		eax, [ebp + 12] ; val 2
-	call	setTextColor
-
-	pop		ebp
-	ret		8								; Clean up the stack
-
-changeColor	ENDP
 
 ; ******************************************************************************************************
 ; INTRODUCTION PROCEDURE:
@@ -152,7 +138,6 @@ changeColor	ENDP
 ; Preconditions:	 welcome, instructions_1, and instructions_2 must be set to strings
 ; Registers Changed: edx,
 ; ******************************************************************************************************
-
 introduction PROC
 
 	; Programmer name and title of assignment
