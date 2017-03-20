@@ -47,10 +47,11 @@ currentNumber        DWORD    1
 ;          Receives:  instruction: instruction string message
 ;                         request: input buffer
 ;                    requestCount: number of digits entered
+;                    currentIndex: current input number
 ;           Returns: none
 ; Registers Changed: edx
 ; ====================================================================================================================
-getString MACRO    instruction, request, requestCount
+getString MACRO instruction, request, requestCount, currentIndex
     push       edx
     push       ecx
     push       eax
