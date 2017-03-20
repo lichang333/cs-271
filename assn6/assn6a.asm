@@ -18,6 +18,11 @@ TITLE Programming Assignment #6 Low Level I/O (assn6a.asm)
 INCLUDE Irvine32.inc
 
 .data
+MIN      = 0
+LO       = 30h
+HI       = 39h
+MAX_SIZE = 10
+
 welcome					   BYTE	  "PROGRAMMING ASSIGNMENT 6: Designing low-level I/O procedures programmed by Alec Merdler.", 0
 instructions_1			   BYTE	  "Please enter 10 unsigned decimal integers.",0
 instructions_2			   BYTE   "Each number must fit inside a 32 bit register. After you've finished, I'll display the list of integers, their sum and their average.", 0
@@ -32,24 +37,18 @@ sumString				   BYTE   "The sum is: ", 0
 request					   DWORD  10 DUP(0)
 requestCount			   DWORD  ?
 
-;constants
-MIN				=		 0
-LO				=		 30h
-HI				=		 39h
-MAX_SIZE		=		 10
-
 ;Array
 list					   DWORD MAX_SIZE DUP(?)  ; Code from Lecture 18/19/20
 strResult				   db 16 dup (0)		  ; string buffer to store decimal to hex (magic)
 
 
-; ==============================================================================
+; ====================================================================================================================
 ;             Macro: getString
 ;       Description: Prompt the user for input and store input as string.
 ;          Receives: none
 ;           Returns: none
 ; Registers Changed: edx
-; ==============================================================================
+; ====================================================================================================================
 getString MACRO	instruction, request, requestCount
 	push	edx
 	push	ecx
@@ -72,13 +71,13 @@ getString MACRO	instruction, request, requestCount
 ENDM
 
 
-; ==============================================================================
+; ====================================================================================================================
 ;             Macro: displayString
 ;       Description: Calls other procedures to drive the program.
 ;          Receives: none
 ;           Returns: none
 ; Registers Changed: edx
-; ==============================================================================
+; ====================================================================================================================
 displayString MACRO  strResult
 	push	edx
 	mov		edx, strResult
@@ -88,13 +87,13 @@ displayString MACRO  strResult
 ENDM
 
 .code
-; ==============================================================================
+; ====================================================================================================================
 ;         Procedure: main
 ;       Description: Calls other procedures to drive the program.
 ;          Receives: none
 ;           Returns: none
 ; Registers Changed: edx
-; ==============================================================================
+; ====================================================================================================================
  main PROC
 	call	introduction
 
@@ -130,44 +129,39 @@ ENDM
 main ENDP
 
 
-; ******************************************************************************************************
-; INTRODUCTION PROCEDURE:
-; Description :		 Procedure to give the user instructions and an introduction to the program.
-; Receives:			 welcome, instructions_1, and instructions_2 are global variables
-; Returns:		     nothing
-; Preconditions:	 welcome, instructions_1, and instructions_2 must be set to strings
-; Registers Changed: edx,
-; ******************************************************************************************************
+; ====================================================================================================================
+;         Procedure: introduction
+;       Description: Prints program instructions and introduction.
+;          Receives: none
+;           Returns: none
+; Registers Changed: none
+; ====================================================================================================================
 introduction PROC
-
-	; Programmer name and title of assignment
 	call	 CrLf
 	mov		 edx, OFFSET welcome
 	call	 WriteString
 	call	 CrLf
 	call	 CrLf
 
-	; assignment instructions
 	mov		edx, OFFSET instructions_1
 	call	WriteString
 	mov		edx, OFFSET instructions_2
 	call	WriteString
 	call	CrLf
-	ret
 
+	ret
 introduction ENDP
 
-; ******************************************************************************************************
-; readVal PROCEDURE:
-; Description :		 Procedure to get and validate an integer from the user and turn the decimal into a string.
-; Receives:			 an array to store values in, a buffer to read the input
-; Returns:			 puts user's integers into an array of strings
-; Preconditions:	 must declare an array, and a way to count the number of digits entered as well as a place to store the original
-;					 decimal input.
-; Registers Changed: edx, eax, ecx, ebx
-; ******************************************************************************************************
-readVal PROC
 
+; ====================================================================================================================
+;         Procedure: readVal
+;       Description: Receives and validates an integer from the user and
+;                    transforms decimal value into string.
+;          Receives: an array to store values in, a buffer to read the input
+;           Returns: puts user's integers into an array of strings
+; Registers Changed: edx, eax, ecx, ebx
+; ====================================================================================================================
+readVal PROC
 		push  ebp
 		mov	  ebp, esp
 		mov	  ecx, 10								; we need 10 numbers total.
@@ -228,15 +222,14 @@ readVal PROC
 readVal ENDP
 
 
-; ******************************************************************************************************
-; writeVal PROCEDURE:
-; Description :		 uses MACRO displayString to convert strings to ascii and prints it out
-; Receives:			 list: @array and request: number of array elements
-; Returns:			 nothing but prints out the string in ascii digits.
-; Preconditions:	 must have an array of integers as strings.
+; ====================================================================================================================
+;         Procedure: writeVal
+;       Description: Utilizes 'displayString' macro to convert strings to ASCII
+;                    and print to console.
+;          Receives: list: @array and request: number of array elements
+;           Returns: none
 ; Registers Changed: eax, ecx, ebx, edx
-; ******************************************************************************************************
-
+; ====================================================================================================================
 writeVal PROC
 	push	ebp
 	mov		ebp, esp
@@ -281,20 +274,18 @@ writeVal PROC
 writeVal ENDP
 
 
-; ******************************************************************************************************
-; displayAve PROCEDURE:
-; Description :		 Takes an array of numbers and prints out the average and sum.
-; Receives:			 list: @array
-; Returns:			 nothing but prints out average and sum of the array
-; Preconditions:	 the array must be filled with integers  as integers, not strings.
+; ====================================================================================================================
+;         Procedure: displayAve
+;       Description: Calculates the average and sum of a given array of numbers
+;          Receives: list: @array
+;           Returns: none
 ; Registers Changed: eax, ebx, ecx, edx
-; ******************************************************************************************************
-
+; ====================================================================================================================
 displayAve PROC
 	push ebp
 	mov  ebp, esp
 	mov  esi, [ebp + 8]  ; @list
-	mov	 eax, 10										; loop control
+	mov	 eax, 10 ; loop control
 	mov  edx, 0
 	mov	 ebx, 0
 	mov	 ecx, eax
@@ -328,27 +319,25 @@ displayAve PROC
 displayAve ENDP
 
 
-; ******************************************************************************************************
-; FAREWELL PROCEDURE:
-; Description :		 Procedure to say goodbye to the user.
-; Receives:		     goodbye is global variables.
-; Returns:			 nothing
-; Preconditions:	 goodbyte must be set to strings.
-; Registers Changed: edx,
-; ******************************************************************************************************
-
+; ====================================================================================================================
+;         Procedure: farewell
+;       Description: Prints farewell message.
+;          Receives: message: string message
+;           Returns: none
+; Registers Changed: edx
+; ====================================================================================================================
 farewell PROC
-
 	push	ebp
 	mov		ebp, esp
-	mov		edx, [ebp + 8]							; @goodbye string
+	; Farewell message parameter
+	mov		edx, [ebp + 8]
 
 	call	CrLf
 	call	WriteString
 	call	CrLf
 	pop		ebp
-	ret		4
 
+	ret		4
 farewell ENDP
 
 exit
