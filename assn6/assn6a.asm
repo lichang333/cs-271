@@ -37,7 +37,7 @@ request              DWORD    10 DUP(0)
 requestCount         DWORD    ?
 list                 DWORD    MAX_SIZE DUP(?)
 strResult            db       16 dup (0)
-
+ecMessage1           BYTE     "**EC: Number each line of user input", 0
 currentNumber        DWORD    1
 
 
@@ -142,6 +142,8 @@ introduction PROC
     call       CrLf
     mov        edx, OFFSET welcomeMessage
     call       WriteString
+    mov        edx, OFFSET ecMessage1
+    call       WriteString
     call       CrLf
     call       CrLf
 
@@ -171,10 +173,7 @@ readVal PROC
 
     ; Increment current index and call macro to receive user input as a string
     getInput:
-    mov        eax, currentNumber
-    inc        eax
-    mov        currentNumber, eax
-    getString  inputPrompt, request, requestCount, currentNumber
+    getString  inputPrompt, request, requestCount, ecx
 
     ; Get parameters from the stack
     push       ecx
@@ -223,7 +222,7 @@ readVal PROC
 
     inputError:
     pop        ecx
-    mov        edx, OFFSET  errorMessage
+    mov        edx, OFFSET errorMessage
     call       WriteString
     call       CrLf
     jmp        getInput
