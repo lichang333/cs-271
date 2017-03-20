@@ -24,22 +24,19 @@ HI       = 39h
 MAX_SIZE = 10
 
 welcome					   BYTE	  "PROGRAMMING ASSIGNMENT 6: Designing low-level I/O procedures programmed by Alec Merdler.", 0
-instructions_1			   BYTE	  "Please enter 10 unsigned decimal integers.",0
-instructions_2			   BYTE   "Each number must fit inside a 32 bit register. After you've finished, I'll display the list of integers, their sum and their average.", 0
+instructions_1			   BYTE	  "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
+instructions_2			   BYTE   "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
 instructions_3			   BYTE   "Please enter an unsigned integer: ", 0
-aveString				   BYTE	  "The average is: ",0
-errString				   BYTE	  "Uh oh, that didn't look right!", 0
-spaces					   BYTE	  ", ", 0
-goodbye					   BYTE	  "Tchau for now!", 0
-enteredString			   BYTE   "For the numbers: ", 0
-sumString				   BYTE   "The sum is: ", 0
-
+errString				   BYTE	  "ERROR: You did not enter an unsigned number or your number was too big.", 0
+spacingMessage			   BYTE	  ", ", 0
+goodbye					   BYTE	  "Thanks for playing!", 0
+enteredString			   BYTE   "You entered the following numbers: ", 0
+sumMessage				   BYTE   "The sum of these numbers is: ", 0
+averageMessage			   BYTE	  "The average is: ",0
 request					   DWORD  10 DUP(0)
 requestCount			   DWORD  ?
-
-;Array
-list					   DWORD MAX_SIZE DUP(?)  ; Code from Lecture 18/19/20
-strResult				   db 16 dup (0)		  ; string buffer to store decimal to hex (magic)
+list					   DWORD MAX_SIZE DUP(?)
+strResult				   db 16 dup (0)
 
 
 ; ====================================================================================================================
@@ -104,8 +101,8 @@ ENDM
 
 	call	CrLf
 
-	push	OFFSET aveString
-	push	OFFSET sumString
+	push	OFFSET averageMessage
+	push	OFFSET sumMessage
 	push	OFFSET list
 	call	displayAve
 
@@ -262,7 +259,7 @@ writeVal PROC
 				loop	next_digit
 
 		pop		ecx
-		mov		edx,	OFFSET spaces
+		mov		edx,	OFFSET spacingMessage
 		call	WriteString
 		mov		edx, 0
 		mov		ebx, 0
