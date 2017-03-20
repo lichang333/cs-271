@@ -142,15 +142,16 @@ introduction PROC
     call       CrLf
     mov        edx, OFFSET welcomeMessage
     call       WriteString
+    call       CrLf
     mov        edx, OFFSET ecMessage1
     call       WriteString
-    call       CrLf
     call       CrLf
 
     mov        edx, OFFSET descriptionMessage1
     call       WriteString
     mov        edx, OFFSET descriptionMessage2
     call       WriteString
+    call       CrLf
     call       CrLf
 
     ret
