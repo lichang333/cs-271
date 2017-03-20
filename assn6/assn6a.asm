@@ -23,20 +23,22 @@ LO       = 30h
 HI       = 39h
 MAX_SIZE = 10
 
-welcomeMessage			   BYTE	  "Designing low-level I/O procedures programmed by Alec Merdler.", 0
-descriptionMessage1		   BYTE	  "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
-descriptionMessage2        BYTE   "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
-inputPrompt			       BYTE   "Please enter an unsigned integer: ", 0
-errorMessage			   BYTE	  "ERROR: You did not enter an unsigned number or your number was too big.", 0
-spacingMessage			   BYTE	  ", ", 0
-farewellMessage		       BYTE	  "Thanks for playing!", 0
-inputMessage			   BYTE   "You entered the following numbers: ", 0
-sumMessage				   BYTE   "The sum of these numbers is: ", 0
-averageMessage			   BYTE	  "The average is: ",0
-request					   DWORD  10 DUP(0)
-requestCount			   DWORD  ?
-list					   DWORD MAX_SIZE DUP(?)
-strResult				   db 16 dup (0)
+welcomeMessage         BYTE      "Designing low-level I/O procedures programmed by Alec Merdler.", 0
+descriptionMessage1  BYTE      "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
+descriptionMessage2  BYTE     "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
+inputPrompt          BYTE     ". Please enter an unsigned integer: ", 0
+errorMessage         BYTE      "ERROR: You did not enter an unsigned number or your number was too big.", 0
+spacingMessage       BYTE      ", ", 0
+farewellMessage      BYTE      "Thanks for playing!", 0
+inputMessage         BYTE     "You entered the following numbers: ", 0
+sumMessage           BYTE     "The sum of these numbers is: ", 0
+averageMessage       BYTE      "The average is: ",0
+request              DWORD    10 DUP(0)
+requestCount         DWORD    ?
+list                 DWORD    MAX_SIZE DUP(?)
+strResult            db       16 dup (0)
+
+currentNumber        DWORD 1
 
 
 ; ====================================================================================================================
@@ -48,24 +50,27 @@ strResult				   db 16 dup (0)
 ;           Returns: none
 ; Registers Changed: edx
 ; ====================================================================================================================
-getString MACRO	instruction, request, requestCount
-    push	edx
-    push	ecx
-    push	eax
-    push	ebx
+getString MACRO    instruction, request, requestCount
+    push    edx
+    push    ecx
+    push    eax
+    push    ebx
 
-    mov		edx, OFFSET inputPrompt
-    call	WriteString
-    mov		edx, OFFSET request
-    mov		ecx, SIZEOF	request
-    call	ReadString
-    mov		requestCount, 00000000h
-    mov		requestCount, eax
+    mov     eax, currentNumber
+    call    WriteDec
+
+    mov        edx, OFFSET inputPrompt
+    call    WriteString
+    mov        edx, OFFSET request
+    mov        ecx, SIZEOF    request
+    call    ReadString
+    mov        requestCount, 00000000h
+    mov        requestCount, eax
 
     pop     ebx
-    pop		eax
-    pop		ecx
-    pop		edx
+    pop        eax
+    pop        ecx
+    pop        edx
 
 ENDM
 
@@ -78,10 +83,10 @@ ENDM
 ; Registers Changed: edx
 ; ====================================================================================================================
 displayString MACRO message
-    push	edx
-    mov		edx, message
-    call	WriteString
-    pop		edx
+    push    edx
+    mov        edx, message
+    call    WriteString
+    pop        edx
 
 ENDM
 
@@ -94,32 +99,32 @@ ENDM
 ; Registers Changed: edx
 ; ====================================================================================================================
  main PROC
-    call	introduction
+    call    introduction
 
-    push	OFFSET list
-    push	OFFSET request
-    push	OFFSET requestCount
-    call	readVal
-    call	CrLf
+    push    OFFSET list
+    push    OFFSET request
+    push    OFFSET requestCount
+    call    readVal
+    call    CrLf
 
-    push	OFFSET averageMessage
-    push	OFFSET sumMessage
-    push	OFFSET list
-    call	displayAve
-    call	CrLf
+    push    OFFSET averageMessage
+    push    OFFSET sumMessage
+    push    OFFSET list
+    call    displayAve
+    call    CrLf
 
-    push	edx
-    mov		edx, OFFSET inputMessage
-    call	WriteString
-    pop		edx
+    push    edx
+    mov        edx, OFFSET inputMessage
+    call    WriteString
+    pop        edx
 
-    push	OFFSET strResult
-    push	OFFSET list
-    call	writeVal
-    call	CrLf
+    push    OFFSET strResult
+    push    OFFSET list
+    call    writeVal
+    call    CrLf
 
-    push	OFFSET farewellMessage
-    call	farewell
+    push    OFFSET farewellMessage
+    call    farewell
 
     exit
 main ENDP
@@ -133,17 +138,17 @@ main ENDP
 ; Registers Changed: none
 ; ====================================================================================================================
 introduction PROC
-    call	 CrLf
-    mov		 edx, OFFSET welcomeMessage
-    call	 WriteString
-    call	 CrLf
-    call	 CrLf
+    call     CrLf
+    mov         edx, OFFSET welcomeMessage
+    call     WriteString
+    call     CrLf
+    call     CrLf
 
-    mov		edx, OFFSET descriptionMessage1
-    call	WriteString
-    mov		edx, OFFSET descriptionMessage2
-    call	WriteString
-    call	CrLf
+    mov        edx, OFFSET descriptionMessage1
+    call    WriteString
+    mov        edx, OFFSET descriptionMessage2
+    call    WriteString
+    call    CrLf
 
     ret
 introduction ENDP
@@ -151,73 +156,73 @@ introduction ENDP
 
 ; ====================================================================================================================
 ;         Procedure: readVal
-;       Description: Receives and validates an integer from the user and
-;                    transforms decimal value into string.
+;       Description: Receives and validates integers from the user and
+;                    transforms decimal values into strings.
 ;          Receives: an array to store values in, a buffer to read the input
 ;           Returns: puts user's integers into an array of strings
 ; Registers Changed: edx, eax, ecx, ebx
 ; ====================================================================================================================
 readVal PROC
-    push  ebp
-    mov	  ebp, esp
-    mov	  ecx, 10
-    mov	  edi, [ebp + 16]
+    push       ebp
+    mov        ebp, esp
+    mov        ecx, 10
+    mov        edi, [ebp + 16]
 
     ; Call macro to receive user input as a string
     getInput:
     getString inputPrompt, request, requestCount
 
     ; Get parameters from the stack
-    push	ecx
+    push       ecx
     ; Parameter holding request
-    mov		esi, [ebp + 12]
-    ; Parameter holding number of digits user entered
-    mov		ecx, [ebp + 8]
-    mov		ecx, [ecx]
+    mov        esi, [ebp + 12]
+    ; Parameter holding number of digits in request
+    mov        ecx, [ebp + 8]
+    mov        ecx, [ecx]
     cld
     ; Clear eax and use ebx as an accumulator
-    mov		eax, 00000000
-    mov		ebx, 00000000
+    mov        eax, 00000000
+    mov        ebx, 00000000
 
     ; Load request into eax one byte at a time
     convertToInt:
     lodsb
 
     ; Perform error checking
-    cmp		eax, LO
-    jb		inputError
-    cmp		eax, HI
-    ja		inputError
+    cmp        eax, LO
+    jb         inputError
+    cmp        eax, HI
+    ja         inputError
 
-    sub		eax, LO
-    push	eax
-    mov		eax, ebx
-    mov		ebx, MAX_SIZE
-    mul		ebx
-    mov		ebx, eax
-    pop		eax
-    add		ebx, eax
-    mov		eax, ebx
+    sub        eax, LO
+    push       eax
+    mov        eax, ebx
+    mov        ebx, MAX_SIZE
+    mul        ebx
+    mov        ebx, eax
+    pop        eax
+    add        ebx, eax
+    mov        eax, ebx
 
-    mov		eax, 00000000
-    loop	convertToInt
+    mov        eax, 00000000
+    loop       convertToInt
 
-    mov		eax,ebx
     ; Put eax into list array
+    mov        eax, ebx
     stosd
 
-    ; Next element
-    add		esi, 4
-    pop		ecx
-    loop	getInput
-    jmp		readValEnd
+    ; Proceed to next element
+    add        esi, 4
+    pop        ecx
+    loop       getInput
+    jmp        readValEnd
 
     inputError:
-    pop		ecx
-    mov		edx, OFFSET  errorMessage
-    call	WriteString
-    call	CrLf
-    jmp		getInput
+    pop        ecx
+    mov        edx, OFFSET  errorMessage
+    call       WriteString
+    call       CrLf
+    jmp        getInput
 
     readValEnd:
     pop ebp
@@ -237,56 +242,56 @@ readVal ENDP
 ; ====================================================================================================================
 writeVal PROC
     ; Get parameters from the stack
-    push	ebp
-    mov		ebp, esp
+    push       ebp
+    mov        ebp, esp
     ; Parameter holding list of input numbers
-    mov		edi, [ebp + 8]
-    mov		ecx, 10
+    mov        edi, [ebp + 8]
+    mov        ecx, 10
 
     outerLoop:
-    push	ecx
-    mov		eax, [edi]
+    push       ecx
+    mov        eax, [edi]
     ; Calculate number of digits using base 10
-    mov		ecx, 10
-    xor		bx, bx
+    mov        ecx, 10
+    xor        bx, bx
 
     divide:
     ; high part = 0
-    xor		edx, edx
-    div		ecx
+    xor        edx, edx
+    div        ecx
     ; DL should be between 0 and 9
-    push	dx
+    push       dx
     ; count number of digits
-    inc		bx
+    inc        bx
     ; Check if eax is zero
-    test	eax, eax
-    jnz		divide
+    test       eax, eax
+    jnz        divide
 
-    mov		cx, bx
-    lea		esi, strResult
+    mov        cx, bx
+    lea        esi, strResult
     ; Print each input number by converting to ASCII, then calling macro
     nextDigit:
-    pop		ax
-    add		ax, '0'
-    mov		[esi], ax
+    pop        ax
+    add        ax, '0'
+    mov        [esi], ax
 
     displayString OFFSET strResult
 
     ; Proceed to next digit
-    loop	nextDigit
+    loop       nextDigit
 
     ; Print space between elements
-    pop		ecx
-    mov		edx, OFFSET spacingMessage
-    call	WriteString
-    mov		edx, 0
-    mov		ebx, 0
-    add		edi, 4
-    loop outerLoop
+    pop        ecx
+    mov        edx, OFFSET spacingMessage
+    call       WriteString
+    mov        edx, 0
+    mov        ebx, 0
+    add        edi, 4
+    loop       outerLoop
 
-    pop		ebp
+    pop        ebp
 
-    ret		8
+    ret        8
 writeVal ENDP
 
 
@@ -299,40 +304,40 @@ writeVal ENDP
 ; ====================================================================================================================
 displayAve PROC
     ; Get parameters from stack
-    push ebp
-    mov  ebp, esp
+    push       ebp
+    mov        ebp, esp
     ; Parameter holding list of input numbers
-    mov  esi, [ebp + 8]
-    mov	 eax, 10
-    mov  edx, 0
-    mov	 ebx, 0
-    mov	 ecx, eax
+    mov        esi, [ebp + 8]
+    mov        eax, 10
+    mov        edx, 0
+    mov        ebx, 0
+    mov        ecx, eax
 
     medianLoop:
-    mov		eax, [esi]
-    add		ebx, eax
-    add		esi, 4
-    loop	medianLoop
+    mov        eax, [esi]
+    add        ebx, eax
+    add        esi, 4
+    loop       medianLoop
 
     endMedianLoop:
-    mov		edx, 0
-    mov		eax, ebx
-    mov		edx, [ebp + 12]
-    call	WriteString
-    call	WriteDec
-    call	CrLf
-    mov		edx, 0
-    mov		ebx, 10
-    div		ebx
-    mov		edx, [ebp + 16]
-    call	WriteString
-    call	WriteDec
-    call	CrLf
+    mov        edx, 0
+    mov        eax, ebx
+    mov        edx, [ebp + 12]
+    call       WriteString
+    call       WriteDec
+    call       CrLf
+    mov        edx, 0
+    mov        ebx, 10
+    div        ebx
+    mov        edx, [ebp + 16]
+    call       WriteString
+    call       WriteDec
+    call       CrLf
 
     endDisplayMedian:
-    pop		ebp
+    pop        ebp
 
-    ret		12
+    ret        12
 displayAve ENDP
 
 
@@ -344,17 +349,17 @@ displayAve ENDP
 ; Registers Changed: edx
 ; ====================================================================================================================
 farewell PROC
-    push	ebp
-    mov		ebp, esp
+    push       ebp
+    mov        ebp, esp
     ; Parameter holding farewell message
-    mov		edx, [ebp + 8]
+    mov        edx, [ebp + 8]
 
-    call	CrLf
-    call	WriteString
-    call	CrLf
-    pop		ebp
+    call       CrLf
+    call       WriteString
+    call       CrLf
+    pop        ebp
 
-    ret		4
+    ret        4
 farewell ENDP
 
 exit
