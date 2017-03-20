@@ -24,13 +24,13 @@ HI       = 39h
 MAX_SIZE = 10
 
 welcome					   BYTE	  "PROGRAMMING ASSIGNMENT 6: Designing low-level I/O procedures programmed by Alec Merdler.", 0
-instructions_1			   BYTE	  "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
-instructions_2			   BYTE   "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
-instructions_3			   BYTE   "Please enter an unsigned integer: ", 0
-errString				   BYTE	  "ERROR: You did not enter an unsigned number or your number was too big.", 0
+descriptionMessage1		   BYTE	  "Please provide 10 unsigned decimal integers. Each number needs to be small enough to fit inside a 32 bit register.", 0
+descriptionMessage2        BYTE   "After you have finished inputting the raw numbers I will display a list of the integers, their sum, and their average value.", 0
+inputPrompt			       BYTE   "Please enter an unsigned integer: ", 0
+errorMessage			   BYTE	  "ERROR: You did not enter an unsigned number or your number was too big.", 0
 spacingMessage			   BYTE	  ", ", 0
-goodbye					   BYTE	  "Thanks for playing!", 0
-enteredString			   BYTE   "You entered the following numbers: ", 0
+farewellMessage		       BYTE	  "Thanks for playing!", 0
+inputMessage			   BYTE   "You entered the following numbers: ", 0
 sumMessage				   BYTE   "The sum of these numbers is: ", 0
 averageMessage			   BYTE	  "The average is: ",0
 request					   DWORD  10 DUP(0)
@@ -52,7 +52,7 @@ getString MACRO	instruction, request, requestCount
 	push	eax
 	push	ebx
 
-	mov		edx, OFFSET instructions_3
+	mov		edx, OFFSET inputPrompt
 	call	WriteString
 	mov		edx, OFFSET request
 	mov		ecx, SIZEOF	request
@@ -98,28 +98,25 @@ ENDM
 	push	OFFSET request
 	push	OFFSET requestCount
 	call	readVal
-
 	call	CrLf
 
 	push	OFFSET averageMessage
 	push	OFFSET sumMessage
 	push	OFFSET list
 	call	displayAve
-
 	call	CrLf
 
 	push	edx
-	mov		edx, OFFSET enteredString
+	mov		edx, OFFSET inputMessage
 	call	WriteString
 	pop		edx
 
 	push	OFFSET strResult
 	push	OFFSET list
 	call	writeVal
-
 	call	CrLf
 
-	push	OFFSET goodbye
+	push	OFFSET farewellMessage
 	call	farewell
 
 	exit
@@ -140,9 +137,9 @@ introduction PROC
 	call	 CrLf
 	call	 CrLf
 
-	mov		edx, OFFSET instructions_1
+	mov		edx, OFFSET descriptionMessage1
 	call	WriteString
-	mov		edx, OFFSET instructions_2
+	mov		edx, OFFSET descriptionMessage2
 	call	WriteString
 	call	CrLf
 
@@ -161,12 +158,12 @@ introduction ENDP
 readVal PROC
 		push  ebp
 		mov	  ebp, esp
-		mov	  ecx, 10								; we need 10 numbers total.
-		mov	  edi, [ebp+16]							; we want to store stuff in the list array
+		mov	  ecx, 10
+		mov	  edi, [ebp + 16]
 
 	userNumberLoop:
 
-					getString instructions_3, request, requestCount    ; Call Macro
+					getString inputPrompt, request, requestCount    ; Call Macro
 
 					push	ecx
 					mov		esi, [ebp+12]			; put request into esi
@@ -208,7 +205,7 @@ readVal PROC
 
 		errMessage:
 				pop		ecx
-				mov		edx, OFFSET  errString
+				mov		edx, OFFSET  errorMessage
 				call	WriteString
 				call	CrLf
 				jmp		userNumberLoop
